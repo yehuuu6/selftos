@@ -172,8 +172,7 @@ def get_package(sender: socket.socket) -> Package | None:
         data = json.loads(response)
     except json.decoder.JSONDecodeError:
         # If client sends a long message, returns none, this will cause
-        # the client to disconnect by force. IDK why this happens, but it does and it's good.
-        # Since it prevents the server from crashing.
+        # the client to disconnect by force.
         return None
 
     package = Package(data["type"], data["content"], data["source"])
