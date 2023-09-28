@@ -6,6 +6,9 @@ import threading
 
 from prompt_toolkit import PromptSession
 import asyncio
+import random
+import string
+
 
 COMPUTER = socket.gethostname() # This is the computer name, used for the package source.
 
@@ -18,7 +21,11 @@ is_running = False
 # Asyncio loop
 input_loop = asyncio.get_event_loop()
 
-user_id = input("User ID: ")
+def generate_random_string(length):
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for _ in range(length))
+
+user_id = generate_random_string(10)
 user_name = input("User Name: ")
 
 def package_handler(package: SelftosNetwork.Package) -> None:
