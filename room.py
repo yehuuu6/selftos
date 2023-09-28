@@ -31,7 +31,7 @@ def connect_main_server() -> None:
         SelftosUtils.printf("<CONSOLE> [red]Connection refused by the main server.[/red]")
         exit(1)
 
-def shutdown(users = users_list, reason: str = "No reason given.") -> None:
+def shutdown(users = users_list, reason: str = "No reason was specified.") -> None:
     """
     Terminates the server with the specified reason.
     """
@@ -60,6 +60,14 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
         user_name = user_data["name"]
 
         user = SelftosNetwork.User(id = user_id, name = user_name, client = sender)
+
+        if user.is_banned:
+            banned_inform_package = SelftosNetwork.Package(type = "SFSMessage", content = "[red3]You are banned from this room![/red3]", source = FILE_TYPE)
+            SelftosNetwork.send_package(banned_inform_package, sender)
+            user.disconnect()
+            SelftosUtils.printf(f"<CONSOLE> [cyan]{user.name}[/cyan] tried to join the room, but they are [red]banned[/red].")
+            return
+
         users_list.append(user)
 
         SelftosCommands.broadcast(users_list, f"[cyan]{user.name}[/cyan] has joined the room.", render_on_console=True, exclude=user)
@@ -89,8 +97,6 @@ def client_handler(client: socket.socket, address: tuple) -> None:
                 if user is not None:
                     users_list.remove(user)
                     SelftosCommands.broadcast(users_list, f"[cyan]{user.name}[/cyan] has left the room.", render_on_console=True)
-                else:
-                    SelftosUtils.printf("<CONSOLE> [red]Error: User not found.[/red]")
             break
 
 def connection_handler() -> None:
@@ -148,7 +154,6 @@ def start() -> None:
     global is_running
     #connect_main_server()
     try:
-        SelftosUtils.printf("<CONSOLE> Starting the room...")
         room_socket.bind((room_config['host'], room_config['port']))
         room_socket.listen(room_config['maxUsers'])
 
@@ -163,6 +168,7 @@ def start() -> None:
     SelftosUtils.show_room_config(config = room_config)
     
 def main():
+    SelftosUtils.printf("<CONSOLE> Starting the room...")
     start()
     input_loop.create_task(handle_admin_input())
     input_loop.run_forever()
