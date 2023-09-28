@@ -9,8 +9,8 @@ class User:
     """
     User object to store data about the user.
     """
-    bans_list_path = "config/bans.txt"
-    mutes_list_path = "config/mutes.txt"
+    bans_list_path = "config/blacklist.txt"
+    mutes_list_path = "config/mutelist.txt"
     admins_list_path = "config/admins.txt"
 
     def __init__(self, id: str, name: str, client: socket.socket):
@@ -61,51 +61,70 @@ class User:
         }
         return json.dumps(data)
 
-    def ban(self) -> None:
+    def ban(self) -> bool:
+        # Check if the user is already banned and return false if so.
+        with open(self.bans_list_path, "r") as ban_list:
+            bans = [ban.strip() for ban in ban_list.readlines()]
+        for ban in bans:
+            if ban == self.name:
+                return False
+        # Else add the user to the bans list and return true.
         with open(self.bans_list_path, "a") as ban_list:
             ban_list.write(f"{self.name}\n")
         self.is_banned = True
-        self.disconnect()
+        return True
 
-    def unban(self) -> None:
-        bans = []
-        with open(self.bans_list_path, "r") as ban_list:
-            bans = [ban.strip() for ban in ban_list.readlines()]
-        with open(self.bans_list_path, "w") as ban_list:
-            for ban in bans:
-                if ban != self.name:
-                    ban_list.write(ban + '\n')
-    
-        self.is_banned = False
-
-    def kick(self) -> None:
-        self.disconnect()
-
-    def mute(self) -> None:
+    def mute(self) -> bool:
+        # Check if the user is already muted and return false if so.
+        with open(self.mutes_list_path, "r") as mute_list:
+            mutes = [mute.strip() for mute in mute_list.readlines()]
+        for mute in mutes:
+            if mute == self.name:
+                return False
+        # Else add the user to the mutes list and return true.
         with open(self.mutes_list_path, "a") as mute_list:
             mute_list.write(f"{self.name}\n")
         self.is_muted = True
+        return True
 
-    def unmute(self) -> None:
+    def unmute(self) -> bool:
         mutes = []
         with open(self.mutes_list_path, "r") as mute_list:
             mutes = [mute.strip() for mute in mute_list.readlines()]
+        
+        # If the user is not muted, return false.
+        if self.name not in mutes:
+            return False
+
         with open(self.mutes_list_path, "w") as mute_list:
             for mute in mutes:
                 if mute != self.name:
                     mute_list.write(mute + '\n')
         self.is_muted = False
+        return True
     
-    def admin(self) -> None:
+    def admin(self) -> bool:
+        # Check if the user is already an admin and return false if so.
+        with open(self.admins_list_path, "r") as admin_list:
+            admins = [admin.strip() for admin in admin_list.readlines()]
+        for admin in admins:
+            if admin == self.name:
+                return False
+        # Else add the user to the admins list and return true.
         with open(self.admins_list_path, "a") as admin_list:
             admin_list.write(f"{self.name}\n")
         self.is_admin = True
         self.role = self.set_role()
+        return True
 
-    def unadmin(self) -> None:
+    def unadmin(self) -> bool:
         admins = []
         with open(self.admins_list_path, "r") as admin_list:
             admins = [admin.strip() for admin in admin_list.readlines()]
+        
+        # If the user is not an admin, return false.
+        if self.name not in admins:
+            return False
 
         # Write the updated admins list (excluding the self.name)
         with open(self.admins_list_path, "w") as admin_list:
@@ -114,8 +133,12 @@ class User:
                     admin_list.write(admin + '\n')
         self.is_admin = False
         self.role = self.set_role()
+        return True
 
     def disconnect(self) -> None:
+        """
+        Disconnects the user from the server.
+        """
         self.client.close()
 
 class Package:
