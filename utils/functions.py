@@ -31,7 +31,7 @@ def printf(msg: str) -> None:
 def show_room_config(config: dict) -> None:
     for key, value in config.items():
         key = key.capitalize()
-        printf(f"<SERVER> {key}: {value}")
+        printf(f"<CONSOLE> {key}: {value}")
 
 def get_user_by_socket(sock: socket.socket, users_list: List[SelftosNetwork.User]) -> SelftosNetwork.User | None:
     for user in users_list:
