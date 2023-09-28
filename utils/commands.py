@@ -34,7 +34,7 @@ def execute_list(users: List[SelftosNetwork.User], args: List[str]) -> None:
         if len(users) == 0:
             SelftosUtils.printf("<CONSOLE> [yellow]The room is empty.[/yellow]")
             return
-        SelftosUtils.printf("<CONSOLE> Listing active users")
+        SelftosUtils.printf("<CONSOLE> Currently online users:")
         for user in users:
             index = users.index(user) + 1
             SelftosUtils.printf(f"{index} | {user.who()}")
@@ -55,6 +55,7 @@ def execute_who(users: List[SelftosNetwork.User], args: List[str]) -> None:
         user_name = args[0]
         for user in users:
             if user.name == user_name:
+                SelftosUtils.printf("<CONSOLE> User info:")
                 SelftosUtils.printf(user.who())
                 break
         else:
@@ -67,10 +68,10 @@ def execute_kick(users: List[SelftosNetwork.User], args: List[str]) -> None:
         user_name = args[0]
         for user in users:
             if user.name == user_name:
-                package = SelftosNetwork.Package(type = "SFSMessage", content = "You have been [bold red]kicked[/bold red] from the room.", source = FILE_TYPE)
+                package = SelftosNetwork.Package(type = "SFSMessage", content = "You have been [bold red]kicked[/bold red] from the server.", source = FILE_TYPE)
                 SelftosNetwork.send_package(package, user.client)
-                user.kick()
-                broadcast(users, f"[cyan]{user.name}[/cyan] has been [bold red]kicked[/bold red] from the room.", render_on_console=True)
+                user.disconnect()
+                broadcast(users, f"[cyan]{user.name}[/cyan] has been [bold red]kicked[/bold red] from the server.", render_on_console=True)
                 break
         else:
             SelftosUtils.printf("<CONSOLE> [red]Error: User not found.[/red]")
@@ -82,9 +83,12 @@ def execute_mute(users: List[SelftosNetwork.User], args: List[str]) -> None:
         user_name = args[0]
         for user in users:
             if user.name == user_name:
+                result = user.mute()
+                if not result:
+                    SelftosUtils.printf("<CONSOLE> [red]Error: User is already muted.[/red]")
+                    return
                 package = SelftosNetwork.Package(type = "SFSMessage", content = "You have been [red2]muted[/red2] by the admin.", source = FILE_TYPE)
                 SelftosNetwork.send_package(package, user.client)
-                user.mute()
                 broadcast(users, f"[cyan]{user.name}[/cyan] has been [red2]muted[red2] by the admin.", render_on_console=True, exclude=user)
                 break
         else:
@@ -97,9 +101,12 @@ def execute_unmute(users: List[SelftosNetwork.User], args: List[str]) -> None:
         user_name = args[0]
         for user in users:
             if user.name == user_name:
+                result = user.unmute()
+                if not result:
+                    SelftosUtils.printf("<CONSOLE> [red]Error: User is not muted.[/red]")
+                    return
                 package = SelftosNetwork.Package(type = "SFSMessage", content = "You have been [green3]unmuted[/green3] by the admin.", source = FILE_TYPE)
                 SelftosNetwork.send_package(package, user.client)
-                user.unmute()
                 broadcast(users, f"[cyan]{user.name}[/cyan] has been [green3]unmuted[/green3] by the admin.", render_on_console=True, exclude=user)
                 break
         else:
@@ -112,9 +119,12 @@ def execute_admin(users: List[SelftosNetwork.User], args: List[str]) -> None:
         user_name = args[0]
         for user in users:
             if user.name == user_name:
+                result = user.admin()
+                if not result:
+                    SelftosUtils.printf("<CONSOLE> [red]Error: User is already an admin.[/red]")
+                    return
                 package = SelftosNetwork.Package(type = "SFSMessage", content = "Congratulations! You have been granted [red3]admin[/red3] privileges by the server.", source = FILE_TYPE)
                 SelftosNetwork.send_package(package, user.client)
-                user.admin()
                 broadcast(users, f"[cyan]{user.name}[/cyan] has been granted [red3]admin[/red3] privileges by the server.", render_on_console=True, exclude=user)
                 break
         else:
@@ -127,13 +137,16 @@ def execute_unadmin(users: List[SelftosNetwork.User], args: List[str]) -> None:
         user_name = args[0]
         for user in users:
             if user.name == user_name:
+                result = user.unadmin()
+                if not result:
+                    SelftosUtils.printf("<CONSOLE> [red]Error: User is not an admin.[/red]")
+                    return
                 package = SelftosNetwork.Package(type = "SFSMessage", content = "You no longer have [red3]admin[/red3] privileges on the server.", source = FILE_TYPE)
                 SelftosNetwork.send_package(package, user.client)
-                user.unadmin()
                 broadcast(users, f"[cyan]{user.name}[/cyan] no longer has [red3]admin[/red3] privileges on the server.", render_on_console=True, exclude=user)
                 break
         else:
-            SelftosUtils.printf("<CONSOLE> [red]ERROR: User not found.[/red]")
+            SelftosUtils.printf("<CONSOLE> [red]Error: User not found.[/red]")
 
 def execute_ban(users: List[SelftosNetwork.User], args: List[str]) -> None:
     if len(args) == 0:
@@ -142,27 +155,50 @@ def execute_ban(users: List[SelftosNetwork.User], args: List[str]) -> None:
         user_name = args[0]
         for user in users:
             if user.name == user_name:
-                package = SelftosNetwork.Package(type = "SFSMessage", content = "You have been [bold red]banned[/bold red] from the room.", source = FILE_TYPE)
+                result = user.ban()
+                if not result:
+                    SelftosUtils.printf("<CONSOLE> [red]Error: User is already banned.[/red]")
+                    return
+                package = SelftosNetwork.Package(type = "SFSMessage", content = "You have been [bold red]banned[/bold red] from the server.", source = FILE_TYPE)
                 SelftosNetwork.send_package(package, user.client)
-                user.ban()
-                broadcast(users, f"[cyan]{user.name}[/cyan] has been [bold red]banned[/bold red] from the room.", render_on_console=True)
+                user.disconnect()
+                broadcast(users, f"[cyan]{user.name}[/cyan] has been [bold red]banned[/bold red] from the server.", render_on_console=True)
                 break
         else:
             SelftosUtils.printf("<CONSOLE> [red]Error: User not found.[/red]")
+
+def execute_unban(users: List[SelftosNetwork.User], args: List[str]) -> None:
+    if len(args) == 0:
+            SelftosUtils.printf("<CONSOLE> Usage: unban <user_name>")
+    else:
+        user_name = args[0]
+        with open(SelftosNetwork.User.bans_list_path, "r") as bans_list:
+            bans = [ban.strip() for ban in bans_list.readlines()]
+        for ban in bans:
+            if ban == user_name:
+                bans.remove(ban)
+                with open(SelftosNetwork.User.bans_list_path, "w") as bans_list:
+                    for ban in bans:
+                        bans_list.write(ban + '\n')
+                broadcast(users, f"[cyan]{user_name}[/cyan] has been [green3]unbanned[/green3] from the server.", render_on_console=True)
+                return
+        else:
+            SelftosUtils.printf("<CONSOLE> [red]Error: User is not banned.[/red]")
 
 def execute_clear(users: List[SelftosNetwork.User], args: List[str]) -> None:
     SelftosUtils.clear_console()
 
 def execute_help(users: List[SelftosNetwork.User], args: List[str]) -> None:
-    SelftosUtils.printf("<CONSOLE> List of commands | [blue]Arguments marked with * are required[/blue]");
+    SelftosUtils.printf("<CONSOLE> List of commands | [cyan]Arguments marked with * are required[/cyan]");
     SelftosUtils.printf(f"[magenta]> list[/magenta] [yellow]{escape('[items*]')}[/yellow] - Prints out a list of the specified items.");
     SelftosUtils.printf(f"[magenta]> say[/magenta] [yellow]{escape('[message*]')}[/yellow] - Broadcasts a message to all the users in the room as admin.");
-    SelftosUtils.printf(f"[magenta]> kick[/magenta] [yellow]{escape('[user*]')}[/yellow] - Kicks the specified user from the room.");
+    SelftosUtils.printf(f"[magenta]> kick[/magenta] [yellow]{escape('[user*]')}[/yellow] - Kicks the specified user from the server.");
     SelftosUtils.printf(f"[magenta]> mute[/magenta] [yellow]{escape('[user*]')}[/yellow] - Mutes the specified user.");
     SelftosUtils.printf(f"[magenta]> unmute[/magenta] [yellow]{escape('[user*]')}[/yellow] - Unmutes the specified user.");
     SelftosUtils.printf(f"[magenta]> admin[/magenta] [yellow]{escape('[user*]')}[/yellow] - Grants admin privileges to the specified user.");
     SelftosUtils.printf(f"[magenta]> unadmin[/magenta] [yellow]{escape('[user*]')}[/yellow] - Revokes admin privileges from the specified user.");
-    SelftosUtils.printf(f"[magenta]> ban[/magenta] [yellow]{escape('[user*]')}[/yellow] - Bans the specified user from the room.");
+    SelftosUtils.printf(f"[magenta]> ban[/magenta] [yellow]{escape('[user*]')}[/yellow] - Bans the specified user from the server.");
+    SelftosUtils.printf(f"[magenta]> unban[/magenta] [yellow]{escape('[user*]')}[/yellow] - Unbans the specified user from the server.");
     SelftosUtils.printf(f"[magenta]> who[/magenta] [yellow]{escape('[user*]')}[/yellow] - Shows information about the specified user.");
     SelftosUtils.printf(f"[magenta]> clear[/magenta] - [yellow]Clears the console.");
     SelftosUtils.printf(f"[magenta]> shutdown[/magenta] [yellow]{escape('[reason]')}[/yellow] - Closes the server and broadcasts the reason to all the users in the room.");
@@ -178,6 +214,7 @@ COMMANDS = {
     "admin": execute_admin,
     "unadmin": execute_unadmin,
     "ban": execute_ban,
+    "unban": execute_unban,
     "clear": execute_clear,
     "help": execute_help
 }
