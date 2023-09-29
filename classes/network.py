@@ -191,16 +191,16 @@ def receive_all(sender: socket.socket) -> str:
     """
     full_msg = ""
     new_msg = True
-    msglen = 0
+    msg_len = 0
     while True:
         msg = sender.recv(16)
         if new_msg:
-            msglen = int(msg[:HEADER_SIZE])
+            msg_len = int(msg[:HEADER_SIZE])
             new_msg = False
 
         full_msg += msg.decode("utf-8")
 
-        if len(full_msg) - HEADER_SIZE == msglen:
+        if len(full_msg) - HEADER_SIZE == msg_len:
             break
 
     return full_msg[HEADER_SIZE:]
