@@ -1,12 +1,12 @@
 {
-  "host": "0.0.0.0",
-  "port": 7033,
+  "host": "192.168.1.4",
+  "port": 7030,
+  "id": "selftos",
   "name": "Selftos Public Chat",
   "description": "Selftos public chat room for its contributors and users.",
   "maxUsers": 100,
   "private": false,
-  "password": null,
   "owner": "yehuuu",
   "show_muted_messages": true,
-  "message_logging": true
+  "message_logging": "all"
 }
