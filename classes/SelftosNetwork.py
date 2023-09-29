@@ -20,6 +20,7 @@ class User:
         self.client = client
         self.address = client.getpeername()
 
+        self.is_owner = False
         self.is_admin = self.get_user_status(self.admins_list_path)
         self.is_banned = self.get_user_status(self.bans_list_path)
         self.is_muted = self.get_user_status(self.mutes_list_path)
