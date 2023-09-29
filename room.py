@@ -12,6 +12,7 @@ import json
 import asyncio
 
 FILE_TYPE = "[magenta]SERVER[/magenta]" # This is a server, not client.
+OWNER = room_config['owner']
 
 selftos_main_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #  Main Server
 room_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Room Server Socket
@@ -70,6 +71,11 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
 
         users_list.append(user)
 
+        if user.name == OWNER:
+            user.is_owner = True
+            user.role = "Owner"
+            SelftosCommands.broadcast(users_list, f"Attention! [red3]Owner[/red3] is joining to the room.", render_on_console=True)
+
         SelftosCommands.broadcast(users_list, f"[cyan]{user.name}[/cyan] has joined the room.", render_on_console=True, exclude=user)
 
     elif package.type == "SFSMessage":
@@ -78,7 +84,7 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
             SelftosUtils.printf("<CONSOLE> [red]Error: User not found.[/red]")
             return
         if user.is_muted:
-            muted_inform_package = SelftosNetwork.Package(type = "SFSMessage", content = "You are muted.", source = FILE_TYPE)
+            muted_inform_package = SelftosNetwork.Package(type = "SFSMessage", content = f"<{FILE_TYPE}> You are muted.", source = FILE_TYPE)
             SelftosNetwork.send_package(muted_inform_package, sender)
             if room_config['show_muted_messages']:
                 SelftosUtils.printf(f"[red]MUTED[/red] | <[cyan]{user.name}[/cyan]> [strike]{escape(str(package.content))}[/strike]")
@@ -108,7 +114,7 @@ def connection_handler() -> None:
             client_handler_thread = threading.Thread(target=client_handler, args=(client_socket, address), daemon=True)
             client_handler_thread.start()
 
-            package = SelftosNetwork.Package(type = "SFSHandshake", content = "nickname", source = FILE_TYPE)
+            package = SelftosNetwork.Package(type = "SFSHandshake", content = "nickname", source = FILE_TYPE) # TODO: Give server info to the client in content.
             SelftosNetwork.send_package(package, client_socket)
 
         except socket.error as e:
