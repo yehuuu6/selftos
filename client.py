@@ -1,5 +1,5 @@
-import classes.SelftosNetwork as SelftosNetwork
-import classes.SelftosClient as SelftosClient
+import classes.network as SelftosNetwork
+import classes.general as SelftosGeneral
 import utils.functions as SelftosUtils
 import socket
 import threading
@@ -8,7 +8,6 @@ from prompt_toolkit import PromptSession
 import asyncio
 import random
 import string
-
 
 COMPUTER = socket.gethostname() # This is the computer name, used for the package source.
 
@@ -82,8 +81,8 @@ def connect_to_room() -> None:
     global is_running
     global user
     try:
-        client_socket.connect(("127.0.0.1", 7033))
-        user = SelftosClient.User(id = user_id, name = user_name, client = client_socket)
+        client_socket.connect(("192.168.1.4", 7030))
+        user = SelftosGeneral.User(id = user_id, name = user_name, client = client_socket)
         is_running = True
     except ConnectionRefusedError:
         SelftosUtils.printf("Connection refused by the room.")
