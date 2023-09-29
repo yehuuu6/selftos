@@ -37,7 +37,7 @@ def package_handler(package: SelftosNetwork.Package) -> None:
         SelftosNetwork.send_package(user_package, client_socket)
 
     elif package.type == "SFSMessage":
-        SelftosUtils.printf(f"<[cyan]{package.source}[/cyan]> {package.content}")
+        SelftosUtils.printf(f"{package.content}")
 
 async def write() -> None:
     global is_running
