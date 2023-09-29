@@ -4,7 +4,6 @@ This module provides the necessary server classes for your Selftos chat applicat
 
 import json
 import socket
-import asyncio
 
 class User:
     """
