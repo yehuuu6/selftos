@@ -3,10 +3,12 @@ This module provides the necessary admin commands for your Selftos chat applicat
 Currently, we have to give users list as an argument because if we import it, it won't update the list
 and use the old one which is empty from the start. We need to import users list from room.py dynamically.
 So it will be the updated version of the list.
+------------------------------------------------------------------------------------------------------------------------
+The other problem is, we can not send data to the users when they are banned or kicked, because they get disconnected before the message is sent.
 """
 
 import utils.functions as SelftosUtils
-import classes.SelftosNetwork as SelftosNetwork
+import classes.network as SelftosNetwork
 
 from rich.markup import escape
 from typing import List
@@ -89,7 +91,7 @@ def execute_mute(users: List[SelftosNetwork.User], args: List[str]) -> None:
                     return
                 package = SelftosNetwork.Package(type = "SFSMessage", content = f"<{FILE_TYPE}> You have been [red]muted[/red] by the console.", source = FILE_TYPE)
                 SelftosNetwork.send_package(package, user.client)
-                broadcast(users, f"[cyan]{user.name}[/cyan] has been [red2]muted[red2] by the console.", render_on_console=True, exclude=user)
+                broadcast(users, f"[cyan]{user.name}[/cyan] has been [red]muted[red] by the console.", render_on_console=True, exclude=user)
                 break
         else:
             SelftosUtils.printf("<CONSOLE> [red]Error: User not found.[/red]")
@@ -121,11 +123,11 @@ def execute_admin(users: List[SelftosNetwork.User], args: List[str]) -> None:
             if user.name == user_name:
                 result = user.admin()
                 if not result:
-                    SelftosUtils.printf("<CONSOLE> [red]Error: User already has admin privileges.[/red]")
+                    SelftosUtils.printf("<CONSOLE> [red]Error: User already has Admin privileges.[/red]")
                     return
-                package = SelftosNetwork.Package(type = "SFSMessage", content = f"<{FILE_TYPE}> Congratulations! You have been granted [red3]admin[/red3] privileges by the console.", source = FILE_TYPE)
+                package = SelftosNetwork.Package(type = "SFSMessage", content = f"<{FILE_TYPE}> Congratulations! You have been granted [red3]Admin[/red3] privileges by the console.", source = FILE_TYPE)
                 SelftosNetwork.send_package(package, user.client)
-                broadcast(users, f"[cyan]{user.name}[/cyan] has been granted [red3]admin[/red3] privileges by the console.", render_on_console=True, exclude=user)
+                broadcast(users, f"[cyan]{user.name}[/cyan] has been granted [red3]Admin[/red3] privileges by the console.", render_on_console=True, exclude=user)
                 break
         else:
             SelftosUtils.printf("<CONSOLE> [red]Error: User not found.[/red]")
@@ -191,7 +193,7 @@ def execute_clear(users: List[SelftosNetwork.User], args: List[str]) -> None:
 def execute_help(users: List[SelftosNetwork.User], args: List[str]) -> None:
     SelftosUtils.printf("<CONSOLE> List of commands | [cyan]Arguments marked with * are required[/cyan]");
     SelftosUtils.printf(f"[magenta]> list[/magenta] [yellow]{escape('[items*]')}[/yellow] - Prints out a list of the specified items.");
-    SelftosUtils.printf(f"[magenta]> say[/magenta] [yellow]{escape('[message*]')}[/yellow] - Broadcasts a message to all the users in the room as the [italic]console[/italic].");
+    SelftosUtils.printf(f"[magenta]> say[/magenta] [yellow]{escape('[message*]')}[/yellow] - Broadcast a message to all the users in the room from [italic]console[/italic].");
     SelftosUtils.printf(f"[magenta]> kick[/magenta] [yellow]{escape('[user*]')}[/yellow] - Kicks the specified user from the server.");
     SelftosUtils.printf(f"[magenta]> mute[/magenta] [yellow]{escape('[user*]')}[/yellow] - Mutes the specified user.");
     SelftosUtils.printf(f"[magenta]> unmute[/magenta] [yellow]{escape('[user*]')}[/yellow] - Unmutes the specified user.");
