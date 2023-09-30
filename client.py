@@ -81,7 +81,7 @@ def connect_to_room() -> None:
     global is_running
     global user
     try:
-        client_socket.connect(("192.168.1.4", 7030))
+        client_socket.connect(("192.168.1.6", 7030))
         user = SelftosGeneral.User(id = user_id, name = user_name, client = client_socket)
         is_running = True
     except ConnectionRefusedError:
