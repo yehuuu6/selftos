@@ -1,0 +1,40 @@
+[
+  {
+    "name": "Member",
+    "level": 1,
+    "permissions": {
+      "list": ["users", "files"],
+      "pm": ["*"],
+      "theme": ["*"]
+    },
+    "default": true
+  },
+  {
+    "name": "Moderator",
+    "level": 2,
+    "permissions": {
+      "list": ["*"],
+      "pm": ["*"],
+      "theme": ["*"],
+      "kick": ["*"],
+      "mute": ["*"],
+      "unmute": ["*"]
+    },
+    "users": []
+  },
+  {
+    "name": "Admin",
+    "level": 3,
+    "permissions": {
+      "list": ["*"],
+      "pm": ["*"],
+      "theme": ["*"],
+      "kick": ["*"],
+      "ban": ["*"],
+      "unban": ["*"],
+      "mute": ["*"],
+      "unmute": ["*"]
+    },
+    "users": []
+  }
+]
