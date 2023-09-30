@@ -5,13 +5,16 @@ This module provides the necessary server classes for your Selftos chat applicat
 import json
 import socket
 
+from typing import List
+
 class User:
     """
     User object to store data about the user.
     """
-    bans_list_path = "config/blacklist.txt"
-    mutes_list_path = "config/mutelist.txt"
-    admins_list_path = "config/admins.txt"
+    bans_list_path = "config/banned-users.json"
+    mutes_list_path = "config/muted-users.json"
+    ops_list_path = "config/ops.json"
+    roles_list_path = "config/core/roles.json"
 
     def __init__(self, id: str, name: str, client: socket.socket):
         self.id = id
@@ -20,122 +23,239 @@ class User:
         self.client = client
         self.address = client.getpeername()
 
-        self.is_owner = False
-        self.is_admin = self.get_user_status(self.admins_list_path)
+        self.is_op = self.get_user_status(self.ops_list_path)
         self.is_banned = self.get_user_status(self.bans_list_path)
         self.is_muted = self.get_user_status(self.mutes_list_path)
 
-        self.role = self.set_role()
+        self.roles = self.set_roles()
+        self.main_role = self.roles[-1]
 
-    def who(self) -> str:
+    def who(self, detailed: bool = False) -> str:
         """
         Returns a readable string of the user's data.
         """
-        return f"[orange1]ID:[/orange1] {self.id} - [orange1]Name:[/orange1] {self.name} - [orange1]Role:[/orange1] {self.role} - [orange1]Muted:[/orange1] {self.is_muted} - [orange1]From:[/orange1] {self.address}"
+        if detailed:
+            role_output = f"[orange1]Roles[/orange1]: {', '.join(self.roles)}"
+        else:
+            role_output = f"[orange1]Role[/orange1]: {self.main_role}"
+        return f"[orange1]ID:[/orange1] {self.id} - [orange1]Name:[/orange1] {self.name} - {role_output} - [orange1]Muted:[/orange1] {self.is_muted} - [orange1]From:[/orange1] {self.address}"
     
     def get_user_status(self, file_path: str) -> bool:
         with open(file_path, "r") as user_list:
             users = user_list.readlines()
-            user_list.close()
         for user in users:
             if user.strip() == self.name:
                 return True
         return False
 
-    def set_role(self) -> str:
+    def set_roles(self) -> List[str]:
         """
-        Sets the user's role.
+        Sets the user's role based on the user's name, ordered by level.
         """
-        if self.is_admin:
-            return "Admin"
-        else:
-            return "User"
+        user_roles = []
+        with open(self.roles_list_path, "r") as roles_list:
+            roles = json.load(roles_list)
+
+        # Filter roles based on the user's name and store them in a list
+        for role in roles:
+            if role.get("default") == True:
+                user_roles.append((role["level"], role["name"]))
+            for user in role.get("users", []):
+                if user.get("name") == self.name:
+                    user_roles.append((role["level"], role["name"]))
+
+        # Sort roles based on their level
+        user_roles.sort(key=lambda x: x[0])
+
+        # Extract role names from the sorted list
+        sorted_roles = [role_name for _, role_name in user_roles]
+
+        return sorted_roles
 
     def get_json(self) -> str:
         data = {
             "id": self.id,
             "name": self.name,
-            "role": self.role,
+            "roles": self.roles,
             "is_banned": self.is_banned,
             "is_muted": self.is_muted,
-            "is_admin": self.is_admin
+            "is_op": self.is_op
         }
         return json.dumps(data)
 
-    def ban(self) -> bool:
-        # Check if the user is already banned and return false if so.
-        with open(self.bans_list_path, "r") as ban_list:
-            bans = [ban.strip() for ban in ban_list.readlines()]
+    def ban(self, time_h: int) -> bool:
+        """
+        Ban user for a specific amount of time (in hours)
+        """
+        add = {
+            "uid": self.id,
+            "name": self.name,
+            "time": time_h
+        }
+
+        # Check if the user is already banned by checking the bans.json file.
+        with open(self.bans_list_path, "r") as bans_list:
+            bans = json.load(bans_list)
         for ban in bans:
-            if ban == self.name:
+            if ban["name"] == self.name:
                 return False
         # Else add the user to the bans list and return true.
-        with open(self.bans_list_path, "a") as ban_list:
-            ban_list.write(f"{self.name}\n")
+        with open(self.bans_list_path, "w") as bans_list:
+            bans.append(add)
+            json.dump(bans, bans_list, indent=2)
+        
         self.is_banned = True
+
         return True
 
-    def mute(self) -> bool:
-        # Check if the user is already muted and return false if so.
-        with open(self.mutes_list_path, "r") as mute_list:
-            mutes = [mute.strip() for mute in mute_list.readlines()]
+    def op(self) -> bool:
+        # Check if the user is already op by checking the ops.json file.
+        with open(self.ops_list_path, "r") as ops_list:
+            ops = json.load(ops_list)
+        for op in ops:
+            if op["name"] == self.name:
+                return False
+        # Else add the user to the ops list and return true.
+        with open(self.ops_list_path, "w") as ops_list:
+            obj = {
+                "uid": self.id,
+                "name": self.name
+            }
+            ops.append(obj)
+            json.dump(ops, ops_list, indent=2)
+        
+        self.is_op = True
+
+        return True
+
+    def mute(self, time_m: int) -> bool:
+        """
+        Mute user for a specific amount of time (in minutes)
+        """
+        add = {
+            "uid": self.id,
+            "name": self.name,
+            "time": time_m
+        }
+
+        # Check if the user is already muted by checking the mutes.json file.
+        with open(self.mutes_list_path, "r") as mutes_list:
+            mutes = json.load(mutes_list)
         for mute in mutes:
-            if mute == self.name:
+            if mute["name"] == self.name:
                 return False
         # Else add the user to the mutes list and return true.
-        with open(self.mutes_list_path, "a") as mute_list:
-            mute_list.write(f"{self.name}\n")
-        self.is_muted = True
-        return True
-
-    def unmute(self) -> bool:
-        mutes = []
-        with open(self.mutes_list_path, "r") as mute_list:
-            mutes = [mute.strip() for mute in mute_list.readlines()]
+        with open(self.mutes_list_path, "w") as mutes_list:
+            mutes.append(add)
+            json.dump(mutes, mutes_list, indent=2)
         
-        # If the user is not muted, return false.
-        if self.name not in mutes:
-            return False
+        self.is_muted = True
 
-        with open(self.mutes_list_path, "w") as mute_list:
-            for mute in mutes:
-                if mute != self.name:
-                    mute_list.write(mute + '\n')
+        return True
+    
+    def unmute(self) -> bool:
+        """
+        Unmute the user.
+        """
+        with open(self.mutes_list_path, "r") as mutes_list:
+            mutes = json.load(mutes_list)
+        for mute in mutes:
+            if mute["name"] == self.name:
+                mutes.remove(mute)
+                break
+        else:
+            return False
+        with open(self.mutes_list_path, "w") as mutes_list:
+            json.dump(mutes, mutes_list, indent=2)
+        
         self.is_muted = False
         return True
     
-    def admin(self) -> bool:
-        # Check if the user is already an admin and return false if so.
-        with open(self.admins_list_path, "r") as admin_list:
-            admins = [admin.strip() for admin in admin_list.readlines()]
-        for admin in admins:
-            if admin == self.name:
-                return False
-        # Else add the user to the admins list and return true.
-        with open(self.admins_list_path, "a") as admin_list:
-            admin_list.write(f"{self.name}\n")
-        self.is_admin = True
-        self.role = self.set_role()
-        return True
-
-    def unadmin(self) -> bool:
-        admins = []
-        with open(self.admins_list_path, "r") as admin_list:
-            admins = [admin.strip() for admin in admin_list.readlines()]
-        
-        # If the user is not an admin, return false.
-        if self.name not in admins:
+    def deop(self) -> bool:
+        """
+        Deop the user.
+        """
+        with open(self.ops_list_path, "r") as ops_list:
+            ops = json.load(ops_list)
+        for op in ops:
+            if op["name"] == self.name:
+                ops.remove(op)
+                break
+        else:
             return False
-
-        # Write the updated admins list (excluding the self.name)
-        with open(self.admins_list_path, "w") as admin_list:
-            for admin in admins:
-                if admin != self.name:
-                    admin_list.write(admin + '\n')
-        self.is_admin = False
-        self.role = self.set_role()
+        with open(self.ops_list_path, "w") as ops_list:
+            json.dump(ops, ops_list, indent=2)
+        
+        self.is_op = False
         return True
 
+    def add_role(self, role_name: str) -> bool:
+        """
+        Give the user a role.
+        """
+        with open(self.roles_list_path, "r") as roles_list:
+            roles = json.load(roles_list)
+        for role in roles:
+            if role.get("default") == True:
+                continue
+            if role["name"] == role_name:
+                for user in role.get("users", []):
+                    if user.get("name") == self.name:
+                        return False
+                role["users"].append({
+                    "uid": self.id,
+                    "name": self.name
+                })
+                break
+        else:
+            return False
+        with open(self.roles_list_path, "w") as roles_list:
+            json.dump(roles, roles_list, indent=2)
+        
+        self.roles = self.set_roles()
+
+        return True
+
+    def remove_role(self, role_name: str) -> bool:
+        """
+        Remove a role from the user.
+        """
+        with open(self.roles_list_path, "r") as roles_list:
+            roles = json.load(roles_list)
+        for role in roles:
+            if role["name"] == role_name:
+                for user in role.get("users", []):
+                    if user.get("name") == self.name:
+                        role["users"].remove(user)
+                        break
+                break
+        else:
+            return False
+        with open(self.roles_list_path, "w") as roles_list:
+            json.dump(roles, roles_list, indent=2)
+        
+        self.roles = self.set_roles()
+
+        return True
+
+    def has_permission(self, command: str, args: List[str]) -> bool:
+        """
+        Checks if the user has the for given command and arguments.
+        """
+        if self.is_op:
+            return True
+        for role in self.roles:
+            with open(self.roles_list_path, "r") as roles_list:
+                roles = json.load(roles_list)
+            for role_data in roles:
+                if role_data["name"] == role:
+                    if command in role_data["permissions"]:
+                        if "*" in role_data["permissions"][command]:
+                            return True
+                        for arg in args:
+                            if arg in role_data["permissions"][command]:
+                                return True
+        return False
     def disconnect(self) -> None:
         """
         Disconnects the user from the server.
