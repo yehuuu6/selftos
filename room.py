@@ -1,9 +1,9 @@
-from config.initConfig import room_config
 from typing import List
 from prompt_toolkit import PromptSession
 from rich.markup import escape
 import utils.commands as SelftosCommands
 
+import config.loader as SelftosConfig
 import utils.functions as SelftosUtils
 import classes.network as SelftosNetwork
 import socket
@@ -11,9 +11,11 @@ import threading
 import json
 import asyncio
 
+config = SelftosConfig.config
+
 PREFIX = "[magenta]SERVER[/magenta]" # This is a server, not client.
-OWNER = room_config['owner']
-PROMPT_PREFIX = f"{room_config['id']}"
+OWNER = config['owner']
+PROMPT_PREFIX = f"{config['id']}"
 
 selftos_main_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #  Main Server
 room_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Room Server Socket
@@ -73,9 +75,8 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
         users_list.append(user)
 
         if user.name == OWNER:
-            user.is_owner = True
-            user.role = "Owner"
-            SelftosCommands.broadcast(users_list, f"Attention! [red3]Owner[/red3] is joining to the room.", render_on_console=True)
+            user.is_op = True
+            SelftosCommands.broadcast(users_list, f"Attention! an [red3]oeprator[/red3] is joining to the room.", render_on_console=True)
 
         SelftosCommands.broadcast(users_list, f"[cyan]{user.name}[/cyan] has joined the room.", render_on_console=True, exclude=user)
 
@@ -87,7 +88,7 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
         if user.is_muted:
             muted_inform_package = SelftosNetwork.Package(type = "SFSMessage", content = f"<{PREFIX}> You are muted.", source = PREFIX)
             SelftosNetwork.send_package(muted_inform_package, sender)
-            if room_config['show_muted_messages']:
+            if config['show_muted_messages']:
                 SelftosUtils.printf(f"[red]MUTED[/red] | <[cyan]{user.name}[/cyan]> [strike]{escape(str(package.content))}[/strike]")
             return
         SelftosCommands.broadcast(users_list, f"{escape(str(package.content))}", msg_source=f"[cyan]{user.name}[/cyan]", render_on_console=True)
@@ -129,7 +130,7 @@ def connection_handler() -> None:
 
 async def handle_admin_input() -> None:
 
-    session = PromptSession(f"admin@{PROMPT_PREFIX}" + r"\~ ", erase_when_done=True)
+    session = PromptSession(f"console@{PROMPT_PREFIX}" + r"\~ ", erase_when_done=True)
 
     while is_running:  
         try:
@@ -144,7 +145,6 @@ async def handle_admin_input() -> None:
 
         if command == "shutdown":
             if len(args) == 0:
-                s_msg = None
                 shutdown()
             else:
                 s_msg = " ".join(args)
@@ -161,8 +161,8 @@ def start() -> None:
     global is_running
     #connect_main_server()
     try:
-        room_socket.bind((room_config['host'], room_config['port']))
-        room_socket.listen(room_config['maxUsers'])
+        room_socket.bind((config['host'], config['port']))
+        room_socket.listen(config['maxUsers'])
 
         is_running = True
 
@@ -172,7 +172,7 @@ def start() -> None:
         SelftosUtils.printf(f"<CONSOLE> [red]Error: Can not start the server: {e}[/red]")
         exit(1)
     else:
-        SelftosUtils.printf(f"<CONSOLE> Server is [green3]online[/green3] and listening on {room_config['host']}:{room_config['port']}")
+        SelftosUtils.printf(f"<CONSOLE> Server is [green3]online[/green3] and listening on {config['host']}:{config['port']}")
     
 def main():
     SelftosUtils.printf("<CONSOLE> Starting the room server...")
