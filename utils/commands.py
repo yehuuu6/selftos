@@ -1,11 +1,10 @@
 """\
 This module provides the necessary admin commands for your Selftos chat application.
-Known Problems:
+Known Bugs:
 1- Currently, we have to give users list as an argument because if we import it, it won't update the list
 and use the old one which is empty from the start. We need to import users list from room.py dynamically.
-So it will be the updated version of the list.
-2- We can not send data to the users when they are banned or kicked, because they get disconnected before the message is fully sent.
-3- Grant and revoke functions does not work properly. Also we have to dynamically import the config file aswell because
+2- We can not send package to the users when they are banned or kicked, because they get disconnected before the package is fully sent.
+3- Grant and revoke commands does not work properly. We have to dynamically import the config object aswell because
 it gets updates from this code but does not affect the config object that room.py uses.
 """
 
