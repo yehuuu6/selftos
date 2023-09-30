@@ -1,0 +1,12 @@
+{
+  "host": "192.168.1.6",
+  "port": 7030,
+  "id": "selftos",
+  "name": "Selftos Chat Room",
+  "description": "A chat room for Selftos!",
+  "maxUsers": 5,
+  "private": false,
+  "owner": "",
+  "show_muted_messages": true,
+  "message_logging": "disabled"
+}
