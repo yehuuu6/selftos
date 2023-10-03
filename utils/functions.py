@@ -35,6 +35,16 @@ def printf(msg: str) -> None:
     console.print(f"[white]{get_current_time()}[/white] {msg}")
     print_formatted_text(ANSI(output_buffer.getvalue()), end='')
 
+def printc(msg: str, executer: SelftosNetwork.User | None) -> None:
+    """
+    Prints output to the server console or to the console of the user who executed the command.
+    """
+    if executer is not None:
+        package = SelftosNetwork.Package(type = "SFSMessage", content = msg, source = "[magenta]SERVER[/magenta]")
+        SelftosNetwork.send_package(package, executer.client)
+    else:
+        printf(msg)
+
 def show_room_config(config: dict) -> None:
     printf(f"<CONSOLE> Host is set to [bold yellow]{config['host']}[/bold yellow].")
     printf(f"<CONSOLE> Port is set to [bold yellow]{config['port']}[/bold yellow].")
@@ -43,7 +53,7 @@ def show_room_config(config: dict) -> None:
     printf(f"<CONSOLE> Description is set to [bold yellow]{config['description']}[/bold yellow].")
     printf(f"<CONSOLE> Maximum number of users is set to [bold yellow]{config['maxUsers']}[/bold yellow].")
     printf(f"<CONSOLE> Private is set to [bold yellow]{config['private']}[/bold yellow].")
-    printf(f"<CONSOLE> Owner is set to [bold yellow]{config['owner']}[/bold yellow].")
+    printf(f"<CONSOLE> Owner is set to [bold yellow]{config['owner']['name']}[/bold yellow].")
     printf(f"<CONSOLE> Show muted messages is set to [bold yellow]{config['show_muted_messages']}[/bold yellow].")
     printf(f"<CONSOLE> Message logging is set to [bold yellow]{config['message_logging']}[/bold yellow].")
     printf(f"<CONSOLE> Loading roles...")
