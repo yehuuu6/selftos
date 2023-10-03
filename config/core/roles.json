@@ -2,6 +2,7 @@
   {
     "name": "Member",
     "level": 1,
+    "color": "cyan",
     "permissions": {
       "list": ["users", "files"],
       "pm": ["*"],
@@ -12,6 +13,7 @@
   {
     "name": "Moderator",
     "level": 2,
+    "color": "green",
     "permissions": {
       "list": ["*"],
       "pm": ["*"],
@@ -25,6 +27,7 @@
   {
     "name": "Admin",
     "level": 3,
+    "color": "red3",
     "permissions": {
       "list": ["*"],
       "pm": ["*"],
