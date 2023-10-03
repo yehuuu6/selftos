@@ -18,7 +18,10 @@ main_config: dict ={
     "description": "A chat room for Selftos!", # Room description
     "maxUsers": 5, # Maximum number of users allowed in the room
     "private": False, # If True, the room will be hidden from the rooms list
-    "owner": "", # Owner name. If not empty, the user will be granted admin permissions directly
+    "owner": {
+        "uid": "", # User ID
+        "name": "" # User name
+    },
     "show_muted_messages": True, # Prints muted user messages to the console if True
     "message_logging": "disabled", # Creates a log file. Values: "disabled", "messages", "console", "all"
 }
@@ -27,6 +30,7 @@ roles_config = [
   {
     "name": "User",
     "level": 1,
+    "color": "cyan",
     "permissions": {
       "list": ["users"],
       "pm": ["*"],
@@ -37,6 +41,7 @@ roles_config = [
   {
     "name": "Admin",
     "level": 2,
+    "color": "red3",
     "permissions": {
       "list": ["*"],
       "pm": ["*"],
@@ -67,7 +72,7 @@ valid_key_types: dict = {
     "description": str,
     "maxUsers": int,
     "private": bool,
-    "owner": str,
+    "owner": object,
     "show_muted_messages": bool,
     "message_logging": str
 }
@@ -132,7 +137,6 @@ def set_roles_to_config() -> bool:
         return False
     return True
 
-
 def load() -> dict:
     """
     Validates and returns the config file for server to use.
@@ -144,6 +148,22 @@ def load() -> dict:
     if not set_roles_to_config():
         SelftosUtils.printf(f"<CONSOLE> [red]Error:[/red] Failed to load roles in '{ROLES_PATH}'.")
         exit(1)
+
+    if room_config.get("owner") != None and room_config["owner"]["uid"] != "" and room_config["owner"]["name"] != "":
+        with open('config/ops.json', "r") as ops_list:
+            ops = json.load(ops_list)
+        for op in ops:
+            if op["uid"] == room_config["owner"]["uid"]:
+                break
+        else:
+            with open("config/ops.json", "w") as ops_list:
+                obj = {
+                    "uid": room_config["owner"]["uid"],
+                    "name": room_config["owner"]["name"]
+                }
+                ops.append(obj)
+                json.dump(ops, ops_list, indent=2)
+            SelftosUtils.printf(f"<CONSOLE> [bold yellow]{room_config['owner']['name']}[/bold yellow] has been added to the operators list.")
 
     SelftosUtils.printf(f"<CONSOLE> Config loaded [bold green]successfully[/bold green].")
     SelftosUtils.show_room_config(room_config)
