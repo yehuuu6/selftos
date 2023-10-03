@@ -26,25 +26,29 @@ class User:
         self.is_op = self.get_user_status(self.ops_list_path)
         self.is_banned = self.get_user_status(self.bans_list_path)
         self.is_muted = self.get_user_status(self.mutes_list_path)
-
+        self.color = "cyan"
         self.roles = self.set_roles()
-        self.main_role = self.roles[-1]
+        self.main_role = self.set_main_role()
 
     def who(self, detailed: bool = False) -> str:
         """
         Returns a readable string of the user's data.
         """
         if detailed:
-            role_output = f"[orange1]Roles[/orange1]: {', '.join(self.roles)}"
+            output = f"[orange1]ID:[/orange1] {self.id} - [orange1]Name:[/orange1] {self.name} - [orange1]Roles[/orange1]: {', '.join(self.roles)} - [orange1]Operator:[/orange1] {self.is_op} - [orange1]Muted:[/orange1] {self.is_muted} - [orange1]From:[/orange1] {self.address}"
         else:
-            role_output = f"[orange1]Role[/orange1]: {self.main_role}"
-        return f"[orange1]ID:[/orange1] {self.id} - [orange1]Name:[/orange1] {self.name} - {role_output} - [orange1]Muted:[/orange1] {self.is_muted} - [orange1]From:[/orange1] {self.address}"
+            output = f"[orange1]ID:[/orange1] {self.id} - [orange1]Name:[/orange1] {self.name} - [orange1]Role[/orange1]: {self.main_role}"
+        return output
     
+    def set_main_role(self) -> str:
+        role = self.roles[-1] # The last role in the list is the main role
+        return role
+
     def get_user_status(self, file_path: str) -> bool:
         with open(file_path, "r") as user_list:
-            users = user_list.readlines()
+            users = json.load(user_list)
         for user in users:
-            if user.strip() == self.name:
+            if user["name"] == self.name:
                 return True
         return False
 
@@ -53,22 +57,29 @@ class User:
         Sets the user's role based on the user's name, ordered by level.
         """
         user_roles = []
+        user_colors = []
         with open(self.roles_list_path, "r") as roles_list:
             roles = json.load(roles_list)
 
         # Filter roles based on the user's name and store them in a list
         for role in roles:
             if role.get("default") == True:
+                user_colors.append((role["level"], role["color"]))
                 user_roles.append((role["level"], role["name"]))
             for user in role.get("users", []):
                 if user.get("name") == self.name:
+                    user_colors.append((role["level"], role["color"]))
                     user_roles.append((role["level"], role["name"]))
 
         # Sort roles based on their level
         user_roles.sort(key=lambda x: x[0])
+        user_colors.sort(key=lambda x: x[0])
 
         # Extract role names from the sorted list
         sorted_roles = [role_name for _, role_name in user_roles]
+        sorted_colors = [role_color for _, role_color in user_colors]
+
+        self.color = sorted_colors[-1] # The last role in the list is the main role
 
         return sorted_roles
 
@@ -198,7 +209,7 @@ class User:
         for role in roles:
             if role.get("default") == True:
                 continue
-            if role["name"] == role_name:
+            if str(role["name"]) == role_name:
                 for user in role.get("users", []):
                     if user.get("name") == self.name:
                         return False
@@ -209,10 +220,14 @@ class User:
                 break
         else:
             return False
-        with open(self.roles_list_path, "w") as roles_list:
-            json.dump(roles, roles_list, indent=2)
+        try:
+            with open(self.roles_list_path, "w") as roles_list:
+                json.dump(roles, roles_list, indent=2)
+        except PermissionError:
+            return False
         
         self.roles = self.set_roles()
+        self.main_role = self.set_main_role()
 
         return True
 
@@ -223,18 +238,26 @@ class User:
         with open(self.roles_list_path, "r") as roles_list:
             roles = json.load(roles_list)
         for role in roles:
-            if role["name"] == role_name:
+            if role.get("default") == True:
+                continue
+            if str(role["name"]) == role_name:
                 for user in role.get("users", []):
                     if user.get("name") == self.name:
                         role["users"].remove(user)
                         break
+                else:
+                    return False
                 break
         else:
             return False
-        with open(self.roles_list_path, "w") as roles_list:
-            json.dump(roles, roles_list, indent=2)
+        try:
+            with open(self.roles_list_path, "w") as roles_list:
+                json.dump(roles, roles_list, indent=2)
+        except PermissionError:
+            return False
         
         self.roles = self.set_roles()
+        self.main_role = self.set_main_role()
 
         return True
 
@@ -269,6 +292,7 @@ class Package:
     VALID_TYPES = [
         "SFSHandshake",
         "SFSMessage",
+        "SFSCommand",
         "SFSHeartbeat",
         "SFSUserData",
         "SFSRoomData"
@@ -330,7 +354,8 @@ def get_package(sender: socket.socket) -> Package | None:
     Receives a package as str from the sender and returns it as a Package.
     """
     try:
-        response = receive_all(sender)
+        #response = receive_all(sender)
+        response = sender.recv(4096).decode("utf-8")
     except socket.error:
         return None
     try:
@@ -357,9 +382,9 @@ def send_package(package: Package, target: socket.socket) -> None:
         "source": package.source
     })
 
-    data = f"{len(data):<{HEADER_SIZE}}" + data
+    #data = f"{len(data):<{HEADER_SIZE}}" + data
 
     try:
-        target.sendall(bytes(data, "utf-8"))
+        target.send(bytes(data, "utf-8"))
     except socket.error:
         pass
