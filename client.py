@@ -53,7 +53,10 @@ async def write() -> None:
                 client_socket.close()
                 break
             msg = f"{msg}"
-            package = SelftosNetwork.Package(type = "SFSMessage", content = msg, source = FILE_TYPE)
+            if msg.startswith("/"):
+                package = SelftosNetwork.Package(type = "SFSCommand", content = msg.replace("/", "", 1), source = FILE_TYPE)
+            else:
+                package = SelftosNetwork.Package(type = "SFSMessage", content = msg, source = FILE_TYPE)
             SelftosNetwork.send_package(package, client_socket)
         except Exception as e:
             SelftosUtils.printf("Error: " + str(e))
