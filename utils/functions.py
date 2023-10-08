@@ -35,15 +35,21 @@ def printf(msg: str) -> None:
     console.print(f"[white]{get_current_time()}[/white] {msg}")
     print_formatted_text(ANSI(output_buffer.getvalue()), end='')
 
-def printc(msg: str, executer: SelftosNetwork.User | None) -> None:
+def printc(messages: List[str], executer: SelftosNetwork.User | None) -> None:
     """
     Prints output to the server console or to the console of the user who executed the command.
     """
+    output = ""
+    for line in messages:
+        if line != messages[-1]:
+            output += f"{line}\n"
+        else:
+            output += f"{line}"
     if executer is not None:
-        package = SelftosNetwork.Package(type = "SFSMessage", content = msg, source = "[magenta]SERVER[/magenta]")
+        package = SelftosNetwork.Package(type = "SFSMessage", content = output, source = "[magenta]SERVER[/magenta]")
         SelftosNetwork.send_package(package, executer.client)
     else:
-        printf(msg)
+        printf(output)
 
 def show_room_config(config: dict) -> None:
     printf(f"<CONSOLE> Host is set to [bold yellow]{config['host']}[/bold yellow].")
