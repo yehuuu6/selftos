@@ -4,6 +4,7 @@
     "level": 1,
     "color": "cyan",
     "permissions": {
+      "help": ["*"],
       "list": ["users", "files"],
       "pm": ["*"],
       "theme": ["*"]
@@ -15,6 +16,7 @@
     "level": 2,
     "color": "green",
     "permissions": {
+      "help": ["*"],
       "list": ["*"],
       "pm": ["*"],
       "theme": ["*"],
@@ -29,6 +31,7 @@
     "level": 3,
     "color": "red3",
     "permissions": {
+      "help": ["*"],
       "list": ["*"],
       "pm": ["*"],
       "theme": ["*"],
