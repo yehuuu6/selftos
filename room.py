@@ -9,7 +9,6 @@ import socket
 import threading
 import json
 import asyncio
-import time
 
 config = SelftosConfig.config
 
@@ -43,7 +42,6 @@ def broadcast(msg: str, msg_source: str = PREFIX, render_on_console: bool = Fals
         if msg_source != PREFIX and msg_source == user.name:
             role = user.main_role
             color = user.color
-            SelftosUtils.printf(color + role)
             # [[color]role[/color]] 
             perm_indicator = f"[gold3]{escape('[')}[/gold3][{color}]{role}[/{color}][gold3]{escape(']')}[/gold3] "
             break
@@ -78,70 +76,71 @@ def shutdown(users = users_list, reason: str = "No reason was specified.") -> No
 
 def execute_list(args: List[str], executer: SelftosNetwork.User | None) -> None:
     if len(args) == 0:
-        SelftosUtils.printc("<CONSOLE> Usage: list <request>", executer)
-        SelftosUtils.printc("<CONSOLE> Available requests: users, roles", executer)
+        output_a = [
+            f"<CONSOLE> Usage: list <request>",
+            f"[magenta]> Available requests:[/magenta] [yellow]users, roles[/yellow]"
+        ]
+        SelftosUtils.printc(output_a, executer)
         return
     elif args[0] == "users":
         if len(users_list) == 0:
-            SelftosUtils.printc("<CONSOLE> [yellow]The room is empty.[/yellow]", executer)
+            SelftosUtils.printc(["<CONSOLE> [yellow]The room is empty.[/yellow]"], executer)
             return
-        SelftosUtils.printc("<CONSOLE> Currently online users:", executer)
+        output_b = ["<CONSOLE> Currently online users:"]
         for user in users_list:
             index = users_list.index(user) + 1
-            SelftosUtils.printc(f"{index} | {user.who()}", executer)
+            output_b.append(f"{index} | {user.who()}")
+        SelftosUtils.printc(output_b, executer)
     elif args[0] == "roles":
-        SelftosUtils.printc("<CONSOLE> Listing roles:", executer)
+        output_c = ["<CONSOLE> Listing roles:"]
         for role in SelftosConfig.config['roles']:
             is_default = role.get('default')
             default_indicator = "[yellow](default)[/yellow]" if is_default else ""
-            SelftosUtils.printc(
-                f"[bright_magenta]> Name[/bright_magenta]: {role['name']} {default_indicator}:", executer
-            )
-            SelftosUtils.printc(f"[magenta] - Level[/magenta]: {role['level']}", executer)
-            SelftosUtils.printc(f"[bright_magenta] > Permissions[/bright_magenta]:", executer)
+            output_c.append(f"[magenta] - {role['name']}[/magenta] {default_indicator}")
+            output_c.append(f"[magenta] - Level[/magenta]: {role['level']}")
+            output_c.append(f"[bright_magenta] > Permissions[/bright_magenta]:")
             for permission, actions in role['permissions'].items():
                 allowed_actions = ", ".join(f"[green]{action}[/green]" for action in actions)
-                SelftosUtils.printc(f"[magenta]  - {permission}[/magenta]: {allowed_actions}", executer)
+                output_c.append(f"[magenta]  - {permission}[/magenta]: {allowed_actions}")
 
             role_users = role.get('users', [])
             if not role_users:
-                SelftosUtils.printc(
-                    f"[bright_magenta] > Users[/bright_magenta]: [yellow](empty)[/yellow]", executer
-                )
+                output_c.append(f"[bright_magenta] > Users[/bright_magenta]: [yellow](empty)[/yellow]")
             else:
-                SelftosUtils.printc(f"[bright_magenta] > Users[/bright_magenta]:", executer)
+                output_c.append(f"[bright_magenta] > Users[/bright_magenta]:")
                 for i, user in enumerate(role_users, start=1):
-                    SelftosUtils.printc(f"  - {i} | {user['name']}", executer)
+                    output_c.append(f"  - {i} | {user['name']}")
 
             if role['name'] != SelftosConfig.config['roles'][-1]['name']:
-                SelftosUtils.printc("[yellow]----------------------------------------[/yellow]", executer)
+                output_c.append("[yellow]----------------------------------------[/yellow]")
+        SelftosUtils.printc(output_c, executer)
                     
     else:
-        SelftosUtils.printc("<CONSOLE> [red]Error: You can't list that.[/red]", executer)
+        SelftosUtils.printc(["<CONSOLE> [red]Error: You can't list that.[/red]"], executer)
 
 def execute_say(args: List[str], executer: SelftosNetwork.User | None) -> None:
     if len(args) == 0:
-        SelftosUtils.printc("<CONSOLE> Usage: say <message>", executer)
+        SelftosUtils.printc(["<CONSOLE> Usage: say <message>"], executer)
         return
     msg = " ".join(args)
     broadcast(msg, f"[red3]Console[/red3]", render_on_console=True)
 
 def execute_who(args: List[str], executer: SelftosNetwork.User | None) -> None:
     if len(args) == 0:
-            SelftosUtils.printc("<CONSOLE> Usage: who <user_name>", executer)
+            SelftosUtils.printc(["<CONSOLE> Usage: who <user_name>"], executer)
     else:
         user_name = args[0]
         for user in users_list:
             if user.name == user_name:
-                SelftosUtils.printc("<CONSOLE> Detailed user info:", executer)
-                SelftosUtils.printc(user.who(detailed=True), executer)
+                SelftosUtils.printc(["<CONSOLE> Detailed user info:"], executer)
+                SelftosUtils.printc([f"{user.who(detailed=True)}"], executer)
                 break
         else:
-            SelftosUtils.printc("<CONSOLE> [red]Error: User not found.[/red]", executer)
+            SelftosUtils.printc(["<CONSOLE> [red]Error: User not found.[/red]"], executer)
 
 def execute_kick(args: List[str], executer: SelftosNetwork.User | None) -> None:
     if len(args) == 0:
-            SelftosUtils.printc("<CONSOLE> Usage: kick <user_name>", executer)
+            SelftosUtils.printc(["<CONSOLE> Usage: kick <user_name>"], executer)
     else:
         executed_by = f"[cyan]{executer.name}[/cyan]" if executer is not None else "the [red3]Console[/red3]"
         user_name = args[0]
@@ -153,35 +152,35 @@ def execute_kick(args: List[str], executer: SelftosNetwork.User | None) -> None:
                 broadcast(f"[cyan]{user.name}[/cyan] has been [bold red]kicked[/bold red] from the server by {executed_by}.", render_on_console=True, exclude=user)
                 break
         else:
-            SelftosUtils.printc("<CONSOLE> [red]Error: User not found.[/red]", executer)
+            SelftosUtils.printc(["<CONSOLE> [red]Error: User not found.[/red]"], executer)
 
 def execute_mute(args: List[str], executer: SelftosNetwork.User | None) -> None:
     if len(args) < 2:
-        SelftosUtils.printc("<CONSOLE> Usage: mute <user_name> <time_minutes>", executer)
+        SelftosUtils.printc(["<CONSOLE> Usage: mute <user_name> <time_minutes>"], executer)
     else:
         user_name = args[0]
         try:
             timeout = int(args[1])
         except ValueError:
-            SelftosUtils.printc("<CONSOLE> [red]Error: Invalid timeout value. Must be an integer![/red]", executer)
+            SelftosUtils.printc(["<CONSOLE> [red]Error: Invalid timeout value. Must be an integer![/red]"], executer)
             return
         executed_by = f"[cyan]{executer.name}[/cyan]" if executer is not None else "the [red3]Console[/red3]"
         for user in users_list:
             if user.name == user_name:
                 result = user.mute(timeout)
                 if not result:
-                    SelftosUtils.printc("<CONSOLE> [red]Error: User is already muted.[/red]", executer)
+                    SelftosUtils.printc(["<CONSOLE> [red]Error: User is already muted.[/red]"], executer)
                     return
                 package = SelftosNetwork.Package(type = "SFSMessage", content = f"<{PREFIX}> You have been [red]muted[/red] by {executed_by}.", source = PREFIX)
                 SelftosNetwork.send_package(package, user.client)
                 broadcast(f"[cyan]{user.name}[/cyan] has been [red]muted[/red] by {executed_by}.", render_on_console=True, exclude=user)
                 break
         else:
-            SelftosUtils.printc("<CONSOLE> [red]Error: User not found.[/red]", executer)
+            SelftosUtils.printc(["<CONSOLE> [red]Error: User not found.[/red]"], executer)
 
 def execute_unmute(args: List[str], executer: SelftosNetwork.User | None) -> None:
     if len(args) == 0:
-            SelftosUtils.printc("<CONSOLE> Usage: unmute <user_name>", executer)
+            SelftosUtils.printc(["<CONSOLE> Usage: unmute <user_name>"], executer)
     else:
         user_name = args[0]
         executed_by = f"[cyan]{executer.name}[/cyan]" if executer is not None else "the [red3]Console[/red3]"
@@ -189,18 +188,18 @@ def execute_unmute(args: List[str], executer: SelftosNetwork.User | None) -> Non
             if user.name == user_name:
                 result = user.unmute()
                 if not result:
-                    SelftosUtils.printc("<CONSOLE> [red]Error: User is not muted.[/red]", executer)
+                    SelftosUtils.printc(["<CONSOLE> [red]Error: User is not muted.[/red]"], executer)
                     return
                 package = SelftosNetwork.Package(type = "SFSMessage", content = f"<{PREFIX}> You have been [green3]unmuted[/green3] by {executed_by}.", source = PREFIX)
                 SelftosNetwork.send_package(package, user.client)
                 broadcast(f"[cyan]{user.name}[/cyan] has been [green3]unmuted[/green3] by {executed_by}.", render_on_console=True, exclude=user)
                 break
         else:
-            SelftosUtils.printc("<CONSOLE> [red]Error: User not found.[/red]", executer)
+            SelftosUtils.printc(["<CONSOLE> [red]Error: User not found.[/red]"], executer)
 
 def execute_op(args: List[str], executer: SelftosNetwork.User | None) -> None:
     if len(args) == 0:
-            SelftosUtils.printc("<CONSOLE> Usage: op <user_name>", executer)
+            SelftosUtils.printc(["<CONSOLE> Usage: op <user_name>"], executer)
     else:
         user_name = args[0]
         executed_by = f"[cyan]{executer.name}[/cyan]" if executer is not None else "the [red3]Console[/red3]"
@@ -208,18 +207,18 @@ def execute_op(args: List[str], executer: SelftosNetwork.User | None) -> None:
             if user.name == user_name:
                 result = user.op()
                 if not result:
-                    SelftosUtils.printc("<CONSOLE> [red]Error: User already has operator privileges.[/red]", executer)
+                    SelftosUtils.printc(["<CONSOLE> [red]Error: User already has operator privileges.[/red]"], executer)
                     return
                 package = SelftosNetwork.Package(type = "SFSMessage", content = f"<{PREFIX}> Congratulations! You have been granted [red3]operator[/red3] privileges by {executed_by}.", source = PREFIX)
                 SelftosNetwork.send_package(package, user.client)
                 broadcast(f"[cyan]{user.name}[/cyan] has been granted [red3]operator[/red3] privileges by {executed_by}.", render_on_console=True, exclude=user)
                 break
         else:
-            SelftosUtils.printc("<CONSOLE> [red]Error: User not found.[/red]", executer)
+            SelftosUtils.printc(["<CONSOLE> [red]Error: User not found.[/red]"], executer)
 
 def execute_deop(args: List[str], executer: SelftosNetwork.User | None) -> None:
     if len(args) == 0:
-        SelftosUtils.printc("<CONSOLE> Usage: deop <user_name>", executer)
+        SelftosUtils.printc(["<CONSOLE> Usage: deop <user_name>"], executer)
     else:
         user_name = args[0]
         executed_by = f"[cyan]{executer.name}[/cyan]" if executer is not None else "the [red3]Console[/red3]"
@@ -227,31 +226,31 @@ def execute_deop(args: List[str], executer: SelftosNetwork.User | None) -> None:
             if user.name == user_name:
                 result = user.deop()
                 if not result:
-                    SelftosUtils.printc("<CONSOLE> [red]Error: User doesn't have operator privileges.[/red]", executer)
+                    SelftosUtils.printc(["<CONSOLE> [red]Error: User doesn't have operator privileges.[/red]"], executer)
                     return
                 package = SelftosNetwork.Package(type = "SFSMessage", content = f"<{PREFIX}> Your [red3]operator[/red3] privileges have been [red]revoked[/red] by {executed_by}.", source = PREFIX)
                 SelftosNetwork.send_package(package, user.client)
                 broadcast(f"[cyan]{user.name}[/cyan] has been revoked [red3]operator[/red3] privileges by {executed_by}.", render_on_console=True, exclude=user)
                 break
         else:
-            SelftosUtils.printc("<CONSOLE> [red]Error: User not found.[/red]", executer)
+            SelftosUtils.printc(["<CONSOLE> [red]Error: User not found.[/red]"], executer)
 
 def execute_ban(args: List[str], executer: SelftosNetwork.User | None) -> None:
     if len(args) < 2:
-        SelftosUtils.printc("<CONSOLE> Usage: ban <user_name> <time_hours>", executer)
+        SelftosUtils.printc(["<CONSOLE> Usage: ban <user_name> <time_hours>"], executer)
     else:
         user_name = args[0]
         try:
             timeout = int(args[1])
         except ValueError:
-            SelftosUtils.printc("<CONSOLE> [red]Error: Invalid timeout value. Must be an integer![/red]", executer)
+            SelftosUtils.printc(["<CONSOLE> [red]Error: Invalid timeout value. Must be an integer![/red]"], executer)
             return
         executed_by = f"[cyan]{executer.name}[/cyan]" if executer is not None else "the [red3]Console[/red3]"
         for user in users_list:
             if user.name == user_name:
                 result = user.ban(timeout)
                 if not result:
-                    SelftosUtils.printc("<CONSOLE> [red]Error: User is already banned.[/red]", executer)
+                    SelftosUtils.printc(["<CONSOLE> [red]Error: User is already banned.[/red]"], executer)
                     return
                 package = SelftosNetwork.Package(type = "SFSMessage", content = f"<{PREFIX}> You have been [bold red]banned[/bold red] from the server by {executed_by}", source = PREFIX)
                 SelftosNetwork.send_package(package, user.client)
@@ -259,11 +258,11 @@ def execute_ban(args: List[str], executer: SelftosNetwork.User | None) -> None:
                 broadcast(f"[cyan]{user.name}[/cyan] has been [bold red]banned[/bold red] from the server by {executed_by}", render_on_console=True, exclude=user)
                 break
         else:
-            SelftosUtils.printc("<CONSOLE> [red]Error: User not found.[/red]", executer)
+            SelftosUtils.printc(["<CONSOLE> [red]Error: User not found.[/red]"], executer)
 
 def execute_unban(args: List[str], executer: SelftosNetwork.User | None) -> None:
     if len(args) == 0:
-            SelftosUtils.printc("<CONSOLE> Usage: unban <user_name>", executer)
+            SelftosUtils.printc(["<CONSOLE> Usage: unban <user_name>"], executer)
     else:
         user_name = args[0]
         executed_by = f"[cyan]{executer.name}[/cyan]" if executer is not None else "the [red3]Console[/red3]"
@@ -277,36 +276,36 @@ def execute_unban(args: List[str], executer: SelftosNetwork.User | None) -> None
                 broadcast(f"[cyan]{user_name}[/cyan] has been [green3]unbanned[/green3] from the server by {executed_by}", render_on_console=True)
                 break
         else:
-            SelftosUtils.printc("<CONSOLE> [red]Error: User is not banned.[/red]", executer)
+            SelftosUtils.printc(["<CONSOLE> [red]Error: User is not banned.[/red]"], executer)
 
 def execute_clear(args: List[str], executer: SelftosNetwork.User | None) -> None:
     SelftosUtils.clear_console()
 
 def execute_grant(args: List[str], executer: SelftosNetwork.User | None) -> None:
     if len(args) < 2:
-            SelftosUtils.printc("<CONSOLE> Usage: grant <user_name> <role_name>", executer)
+            SelftosUtils.printc(["<CONSOLE> Usage: grant <user_name> <role_name>"], executer)
             return
     try:
         user_name = str(args[0])
         role_name = str(args[1])
     except ValueError:
-        SelftosUtils.printc("<CONSOLE> [red]Error: Invalid argument type. Must be strings![/red]", executer)
+        SelftosUtils.printc(["<CONSOLE> [red]Error: Invalid argument type. Must be strings![/red]"], executer)
         return
 
     for role in SelftosConfig.config['roles']:
         if role_name == role['name']:
             break
     else:
-        SelftosUtils.printc(f"<CONSOLE> [red]Error: Can't find any role named '{role_name}'[/red]", executer)
+        SelftosUtils.printc([f"<CONSOLE> [red]Error: Can't find any role named '{role_name}'[/red]"], executer)
         return
     executed_by = f"[cyan]{executer.name}[/cyan]" if executer is not None else "the [red3]Console[/red3]"
     for user in users_list:
         user.roles = [role for role in user.roles]
         if user.name == user_name:
             if not user.add_role(role_name):
-                SelftosUtils.printc(f"<CONSOLE> [red]Error: User already has '{role_name}' role.[/red]", executer)
+                SelftosUtils.printc([f"<CONSOLE> [red]Error: User already has '{role_name}' role.[/red]"], executer)
                 return
-            SelftosUtils.printc(f"<CONSOLE> [green3]Success! Granted[/green3] [bold yellow]{role_name}[/bold yellow] role to [cyan]{user_name}[/cyan].", executer)
+            SelftosUtils.printc([f"<CONSOLE> [green3]Success! Granted[/green3] [bold yellow]{role_name}[/bold yellow] role to [cyan]{user_name}[/cyan]."], executer)
             inform_grant = SelftosNetwork.Package(type = "SFSMessage", content = f"<{PREFIX}> You have been [green3]granted[/green3] [bold yellow]{role_name}[/bold yellow] role by {executed_by}.", source = PREFIX)
             SelftosNetwork.send_package(inform_grant, user.client)
             # Update SelftosConfig.config['roles']
@@ -316,33 +315,33 @@ def execute_grant(args: List[str], executer: SelftosNetwork.User | None) -> None
                     break
             break
     else:
-        SelftosUtils.printc("<CONSOLE> [red]Error: User not found.[/red]", executer)
+        SelftosUtils.printc(["<CONSOLE> [red]Error: User not found.[/red]"], executer)
 
 def execute_revoke(args: List[str], executer: SelftosNetwork.User | None) -> None:
     if len(args) < 2:
-            SelftosUtils.printc("<CONSOLE> Usage: revoke <user_name> <role_name>", executer)
+            SelftosUtils.printc(["<CONSOLE> Usage: revoke <user_name> <role_name>"], executer)
             return
     try:
         user_name = str(args[0])
         role_name = str(args[1])
     except ValueError:
-        SelftosUtils.printc("<CONSOLE> [red]Error: Invalid argument type. Must be strings![/red]", executer)
+        SelftosUtils.printc(["<CONSOLE> [red]Error: Invalid argument type. Must be strings![/red]"], executer)
         return
     
     for role in SelftosConfig.config['roles']:
         if role_name == role['name']:
             break
     else:
-        SelftosUtils.printc(f"<CONSOLE> [red]Error: Can't find any role named '{role_name}'[/red]", executer)
+        SelftosUtils.printc([f"<CONSOLE> [red]Error: Can't find any role named '{role_name}'[/red]"], executer)
         return
     executed_by = f"[cyan]{executer.name}[/cyan]" if executer is not None else "the [red3]Console[/red3]"
     for user in users_list:
         user.roles = [role for role in user.roles]
         if user.name == user_name:
             if not user.remove_role(role_name):
-                SelftosUtils.printc(f"<CONSOLE> [red]Error: User is not assigned to '{role_name}' role.[/red]", executer)
+                SelftosUtils.printc([f"<CONSOLE> [red]Error: User is not assigned to '{role_name}' role.[/red]"], executer)
                 return
-            SelftosUtils.printc(f"<CONSOLE> [green3]Success![/green3] [red]Revoked[/red] [bold yellow]{role_name}[/bold yellow] role from [cyan]{user_name}[/cyan]., executer", executer)
+            SelftosUtils.printc([f"<CONSOLE> [green3]Success![/green3] [red]Revoked[/red] [bold yellow]{role_name}[/bold yellow] role from [cyan]{user_name}[/cyan]."], executer)
             inform_revoke = SelftosNetwork.Package(type = "SFSMessage", content = f"<{PREFIX}> Your [bold yellow]{role_name}[/bold yellow] role has been [red]revoked[/red] by {executed_by}.", source = PREFIX)
             SelftosNetwork.send_package(inform_revoke, user.client)
             # Update SelftosConfig.config['roles']
@@ -355,7 +354,7 @@ def execute_revoke(args: List[str], executer: SelftosNetwork.User | None) -> Non
                     break
             break
     else:
-        SelftosUtils.printc("<CONSOLE> [red]Error: User not found.[/red]", executer)
+        SelftosUtils.printc(["<CONSOLE> [red]Error: User not found.[/red]"], executer)
 
 def execute_help(args: List[str], executer: SelftosNetwork.User | None) -> None:
     help_output = [
@@ -375,15 +374,7 @@ def execute_help(args: List[str], executer: SelftosNetwork.User | None) -> None:
         f"[magenta]> clear[/magenta] - Clears the console.",
         f"[magenta]> shutdown[/magenta] [yellow]{escape('[reason]')}[/yellow] - Closes the server and broadcasts the reason to all the users in the room."
     ]
-    package_content = ""
-    for line in help_output:
-        if executer is not None:
-            package_content += f"{line}\n"
-        else:
-            SelftosUtils.printf(line)
-    if executer is not None:
-        package = SelftosNetwork.Package(type = "SFSMessage", content = package_content, source = PREFIX)
-        SelftosNetwork.send_package(package, executer.client)
+    SelftosUtils.printc(help_output, executer)
 
 COMMANDS = {
         "list": execute_list,
@@ -469,6 +460,8 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
             SelftosNetwork.send_package(SelftosNetwork.Package(type = "SFSMessage", content = f"<CONSOLE> Command [red]'{command}'[/red] not found. Type 'help' to list commands.", source = PREFIX), sender)
             return
         else:
+            if config['show_executed_commands']:
+                SelftosUtils.printf(f"<CONSOLE> [cyan]{user.name}[/cyan] executed command: [yellow]'{command} {args}'[/yellow]")
             requested_command(args, executer = user)
 
 def client_handler(client: socket.socket, address: tuple) -> None:
