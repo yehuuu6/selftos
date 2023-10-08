@@ -23,6 +23,7 @@ main_config: dict ={
         "name": "" # User name
     },
     "show_muted_messages": True, # Prints muted user messages to the console if True
+    "show_executed_commands": True, # Prints executed commands by users to the console if True
     "message_logging": "disabled", # Creates a log file. Values: "disabled", "messages", "console", "all"
 }
 
@@ -32,6 +33,7 @@ roles_config = [
     "level": 1,
     "color": "cyan",
     "permissions": {
+      "help": ["*"],
       "list": ["users"],
       "pm": ["*"],
       "theme": ["*"]
@@ -43,6 +45,7 @@ roles_config = [
     "level": 2,
     "color": "red3",
     "permissions": {
+      "help": ["*"],
       "list": ["*"],
       "pm": ["*"],
       "theme": ["*"],
@@ -74,6 +77,7 @@ valid_key_types: dict = {
     "private": bool,
     "owner": object,
     "show_muted_messages": bool,
+    "show_executed_commands": bool,
     "message_logging": str
 }
 
