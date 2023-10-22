@@ -17,9 +17,6 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 is_running = False
 
-# Asyncio loop
-input_loop = asyncio.get_event_loop()
-
 def generate_random_string(length):
     characters = string.ascii_letters + string.digits
     return ''.join(random.choice(characters) for _ in range(length))
@@ -40,9 +37,7 @@ def package_handler(package: SelftosNetwork.Package) -> None:
 
 async def write() -> None:
     global is_running
-
     session = PromptSession(user.name + f"@{COMPUTER}" + r"\~ ", erase_when_done=True)
-
     while is_running:
         try:
             try:
@@ -62,6 +57,7 @@ async def write() -> None:
             SelftosUtils.printf("Error: " + str(e))
             is_running = False
             client_socket.close()
+            input_loop.stop()
             break
 
 def listen() -> None:
@@ -84,7 +80,7 @@ def connect_to_room() -> None:
     global is_running
     global user
     try:
-        client_socket.connect(("192.168.1.6", 7030))
+        client_socket.connect(("192.168.1.8", 7030))
         user = SelftosGeneral.User(id = user_id, name = user_name, client = client_socket)
         is_running = True
     except ConnectionRefusedError:
@@ -97,6 +93,9 @@ def connect_to_room() -> None:
 def main() -> None:
     SelftosUtils.printf(f"Welcome {user_name}! Connecting to the room...")
     connect_to_room()
+    global input_loop
+    input_loop = asyncio.new_event_loop()  # Create a new event loop
+    asyncio.set_event_loop(input_loop)  # Set it as the current event loop
     input_loop.create_task(write())
     input_loop.run_forever()
 

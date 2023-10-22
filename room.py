@@ -1,5 +1,5 @@
 from typing import List
-from prompt_toolkit import PromptSession
+from prompt_toolkit import PromptSession, ANSI
 from rich.markup import escape
 
 import config.loader as SelftosConfig
@@ -20,7 +20,6 @@ selftos_main_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #  Main 
 room_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Room Server Socket
 is_running = False # Is the server running?
 users_list: List[SelftosNetwork.User] = [] # List of users in the room
-input_loop = asyncio.get_event_loop() # Asyncio loop for the admin input
 
 def connect_main_server() -> None:
     """
@@ -68,6 +67,7 @@ def shutdown(users = users_list, reason: str = "No reason was specified.") -> No
     for user in users:
         user.disconnect()
     is_running = False
+    global input_loop
     input_loop.stop()
     users.clear()
     room_socket.close()
@@ -94,9 +94,10 @@ def execute_list(args: List[str], executer: SelftosNetwork.User | None) -> None:
     elif args[0] == "roles":
         output_c = ["<CONSOLE> Listing roles:"]
         for role in SelftosConfig.config['roles']:
+            index = SelftosConfig.config['roles'].index(role) + 1
             is_default = role.get('default')
             default_indicator = "[yellow](default)[/yellow]" if is_default else ""
-            output_c.append(f"[magenta] - {role['name']}[/magenta] {default_indicator}")
+            output_c.append(f"[magenta] {index}. [bright_magenta]Role:[/bright_magenta] {role['name']}[/magenta] {default_indicator}")
             output_c.append(f"[magenta] - Level[/magenta]: {role['level']}")
             output_c.append(f"[bright_magenta] > Permissions[/bright_magenta]:")
             for permission, actions in role['permissions'].items():
@@ -112,7 +113,7 @@ def execute_list(args: List[str], executer: SelftosNetwork.User | None) -> None:
                     output_c.append(f"  - {i} | {user['name']}")
 
             if role['name'] != SelftosConfig.config['roles'][-1]['name']:
-                output_c.append("[yellow]----------------------------------------[/yellow]")
+                output_c.append("\n[yellow]----------------------------------------[/yellow]")
         SelftosUtils.printc(output_c, executer)
                     
     else:
@@ -500,8 +501,8 @@ def connection_handler() -> None:
             break
 
 async def handle_admin_input() -> None:
-
-    session = PromptSession(f"console@{PROMPT_PREFIX}" + r"\~ ", erase_when_done=True)
+    prompt_text = f"\033[93mconsole@{PROMPT_PREFIX}" + r"\~ "
+    session = PromptSession(ANSI(prompt_text), erase_when_done=True)
 
     while is_running:  
         try:
@@ -548,6 +549,9 @@ def start() -> None:
 def main():
     SelftosUtils.printf("<CONSOLE> Starting the room server...")
     start()
+    global input_loop
+    input_loop = asyncio.new_event_loop()  # Create a new event loop
+    asyncio.set_event_loop(input_loop)  # Set it as the current event loop
     input_loop.create_task(handle_admin_input())
     input_loop.run_forever()
 
