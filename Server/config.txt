@@ -1,6 +1,0 @@
-token 879d9acf89964cf29fdb7fe2d6f45f3d
-name Selftos
-bind 192.168.1.9
-password 12345
-port 7030
-owner therenaydin

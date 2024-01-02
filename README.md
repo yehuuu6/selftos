@@ -2,6 +2,8 @@
 
 A Python-based chat application designed for anonymous conversations.
 
-## Note
+## REWORK BRANCH
 
-> This was my first project ever. So I'm uploading it to GitHub for the first time. I might continue working on it in the future.
+**This branch is a complete rework of the original project.**
+
+I have finally decided to start on this project again. Without gui, but better from the old code. More secure and more stable.

@@ -1,0 +1,46 @@
+[
+  {
+    "name": "Member",
+    "level": 1,
+    "color": "cyan",
+    "permissions": {
+      "help": ["*"],
+      "list": ["users", "files"],
+      "pm": ["*"],
+      "theme": ["*"]
+    },
+    "default": true
+  },
+  {
+    "name": "Moderator",
+    "level": 2,
+    "color": "green",
+    "permissions": {
+      "help": ["*"],
+      "list": ["*"],
+      "pm": ["*"],
+      "theme": ["*"],
+      "kick": ["*"],
+      "mute": ["*"],
+      "unmute": ["*"]
+    },
+    "users": []
+  },
+  {
+    "name": "Admin",
+    "level": 3,
+    "color": "red3",
+    "permissions": {
+      "help": ["*"],
+      "list": ["*"],
+      "pm": ["*"],
+      "theme": ["*"],
+      "kick": ["*"],
+      "ban": ["*"],
+      "unban": ["*"],
+      "mute": ["*"],
+      "unmute": ["*"]
+    },
+    "users": []
+  }
+]
