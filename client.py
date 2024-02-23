@@ -24,6 +24,12 @@ def generate_random_string(length):
 user_id = generate_random_string(10)
 user_name = input("User Name: ")
 
+#IP = input("Server IP: ")
+#PORT = int(input("Server Port: "))
+
+IP = "192.168.1.14"
+PORT = 7031
+
 def package_handler(package: SelftosNetwork.Package) -> None:
     if not package.is_valid_package():
         SelftosUtils.printf("Invalid package received, something is wrong!")
@@ -80,7 +86,7 @@ def connect_to_room() -> None:
     global is_running
     global user
     try:
-        client_socket.connect(("192.168.1.8", 7030))
+        client_socket.connect((IP, PORT))
         user = SelftosGeneral.User(id = user_id, name = user_name, client = client_socket)
         is_running = True
     except ConnectionRefusedError:
