@@ -4,3 +4,7 @@ tests
 build
 dist
 *.spec
+*.build
+*.dist
+*.pyi
+*.pyd
