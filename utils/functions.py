@@ -61,6 +61,7 @@ def show_room_config(config: dict) -> None:
     printf(f"<CONSOLE> Private is set to [bold yellow]{config['private']}[/bold yellow].")
     printf(f"<CONSOLE> Owner is set to [bold yellow]{config['owner']['name']}[/bold yellow].")
     printf(f"<CONSOLE> Show muted messages is set to [bold yellow]{config['show_muted_messages']}[/bold yellow].")
+    printf(f"<CONSOLE> Show executed commands is set to [bold yellow]{config['show_executed_commands']}[/bold yellow].")
     printf(f"<CONSOLE> Message logging is set to [bold yellow]{config['message_logging']}[/bold yellow].")
     printf(f"<CONSOLE> Loading roles...")
     printf(f"<CONSOLE> Default role is set to [bold yellow]{config['default_role']}[/bold yellow].")

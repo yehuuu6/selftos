@@ -1,8 +1,9 @@
 from typing import List
 from prompt_toolkit import PromptSession, ANSI
 from rich.markup import escape
+from classes.plugin_loader import PluginLoader
 
-import config.loader as SelftosConfig
+import config.config_loader as SelftosConfig
 import utils.functions as SelftosUtils
 import classes.network as SelftosNetwork
 import socket
@@ -11,6 +12,7 @@ import json
 import asyncio
 
 config = SelftosConfig.config
+plugin_loader = PluginLoader()
 
 PREFIX = "[magenta]SERVER[/magenta]" # This is a server, not client.
 OWNER = config['owner']
@@ -33,11 +35,11 @@ def connect_main_server() -> None:
         SelftosUtils.printf("<CONSOLE> [red]Connection refused by the main server.[/red]")
         exit(1)
 
-def broadcast(msg: str, msg_source: str = PREFIX, render_on_console: bool = False, exclude: SelftosNetwork.User | None = None) -> None:
+def broadcast(msg: str, msg_source: str = PREFIX, render_on_console: bool = False, exclude: SelftosNetwork.User | None = None, online_users = users_list) -> None:
     """
     Broadcast a message to all the users in the room.
     """
-    for user in users_list:
+    for user in online_users:
         if msg_source != PREFIX and msg_source == user.name:
             role = user.main_role
             color = user.color
@@ -52,7 +54,7 @@ def broadcast(msg: str, msg_source: str = PREFIX, render_on_console: bool = Fals
     msg = f"<{perm_indicator}{msg_source}> {msg}"
     if render_on_console:
         SelftosUtils.printf(msg)
-    for user in users_list:
+    for user in online_users:
         if user == exclude:
             continue
         package = SelftosNetwork.Package(type = "SFSMessage", content = msg, source = msg_source)
@@ -78,7 +80,7 @@ def execute_list(args: List[str], executer: SelftosNetwork.User | None) -> None:
     if len(args) == 0:
         output_a = [
             f"<CONSOLE> Usage: list <request>",
-            f"[magenta]> Available requests:[/magenta] [yellow]users, roles[/yellow]"
+            f"[magenta]> Available requests:[/magenta] [yellow]users, roles, plugins[/yellow]"
         ]
         SelftosUtils.printc(output_a, executer)
         return
@@ -115,7 +117,21 @@ def execute_list(args: List[str], executer: SelftosNetwork.User | None) -> None:
             if role['name'] != SelftosConfig.config['roles'][-1]['name']:
                 output_c.append("\n[yellow]----------------------------------------[/yellow]")
         SelftosUtils.printc(output_c, executer)
-                    
+
+    elif args[0] == "plugins":
+        if len(plugin_loader.plugins) == 0:
+            SelftosUtils.printc(["<CONSOLE> [yellow]No plugins loaded.[/yellow]"], executer)
+            return
+        output_d = ["<CONSOLE> Listing plugins:"]
+        for plugin in plugin_loader.plugins:
+            num = plugin_loader.plugins.index(plugin) + 1
+            output_d.append(f"[magenta] {num}) [cyan]{plugin.name} {plugin.version}[/cyan][/magenta]")
+            output_d.append(f"[magenta]   - [yellow]Description[/yellow]: {plugin.description}[/magenta]")
+            output_d.append(f"[magenta]   - [yellow]Author[/yellow]: {plugin.author}[/magenta]")
+            if plugin != plugin_loader.plugins[-1]:
+                output_d.append("\n[yellow]----------------------------------------[/yellow]")
+        SelftosUtils.printc(output_d, executer)
+
     else:
         SelftosUtils.printc(["<CONSOLE> [red]Error: You can't list that.[/red]"], executer)
 
@@ -428,6 +444,9 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
 
         broadcast(f"[cyan]{user.name}[/cyan] has joined the room.", render_on_console=True, exclude=user)
 
+        for plugin in plugin_loader.plugins:
+            plugin.on_user_joined(user)
+
     elif package.type == "SFSMessage":
         user = SelftosUtils.get_user_by_socket(sock = sender, users_list = users_list)
         if user is None:
@@ -439,6 +458,9 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
                 SelftosUtils.printf(f"[red]MUTED[/red] | <[cyan]{user.name}[/cyan]> [strike]{escape(str(package.content))}[/strike]")
             return
         broadcast(f"{escape(str(package.content))}", msg_source=f"{user.name}", render_on_console=True)
+
+        for plugin in plugin_loader.plugins:
+            plugin.on_message_received(user, package.content)
 
     elif package.type == "SFSCommand":
         user = SelftosUtils.get_user_by_socket(sock = sender, users_list = users_list)
@@ -465,10 +487,15 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
                 SelftosUtils.printf(f"<CONSOLE> [cyan]{user.name}[/cyan] executed command: [yellow]'{command} {args}'[/yellow]")
             requested_command(args, executer = user)
 
+        for plugin in plugin_loader.plugins:
+            plugin.on_command_executed(user, command, args)
+
 def client_handler(client: socket.socket, address: tuple) -> None:
     while is_running:
         package = SelftosNetwork.get_package(client)
         if package is not None:
+            for plugin in plugin_loader.plugins:
+                plugin.on_package_received(client, package)
             package_handler(package, client)
         else:
             if is_running:
@@ -477,6 +504,8 @@ def client_handler(client: socket.socket, address: tuple) -> None:
                 if user is not None:
                     users_list.remove(user)
                     broadcast(f"[cyan]{user.name}[/cyan] has left the room.", render_on_console=True)
+                    for plugin in plugin_loader.plugins:
+                        plugin.on_user_left(user)
             break
 
 def connection_handler() -> None:
@@ -530,6 +559,10 @@ async def handle_admin_input() -> None:
                 requested_command(args, executer = None)
 
 def start() -> None:
+    SelftosUtils.printf("<CONSOLE> Loading plugins...")
+    a = plugin_loader.load_plugins()
+    SelftosUtils.printf(f"<CONSOLE> Successfully loaded {len(plugin_loader.plugins)} plugins.")
+    SelftosUtils.printf("<CONSOLE> Starting the room server...")
     global is_running
     #connect_main_server()
     try:
@@ -547,11 +580,10 @@ def start() -> None:
         SelftosUtils.printf(f"<CONSOLE> Server is [green3]online[/green3] and listening on {config['host']}:{config['port']}")
     
 def main():
-    SelftosUtils.printf("<CONSOLE> Starting the room server...")
-    start()
     global input_loop
     input_loop = asyncio.new_event_loop()  # Create a new event loop
     asyncio.set_event_loop(input_loop)  # Set it as the current event loop
+    start()
     input_loop.create_task(handle_admin_input())
     input_loop.run_forever()
 

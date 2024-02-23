@@ -169,7 +169,7 @@ def load() -> dict:
                 json.dump(ops, ops_list, indent=2)
             SelftosUtils.printf(f"<CONSOLE> [bold yellow]{room_config['owner']['name']}[/bold yellow] has been added to the operators list.")
 
-    SelftosUtils.printf(f"<CONSOLE> Config loaded [bold green]successfully[/bold green].")
+    SelftosUtils.printf(f"<CONSOLE> Config loaded [green3]successfully[/green3].")
     SelftosUtils.show_room_config(room_config)
     return room_config
 
