@@ -8,3 +8,4 @@ dist
 *.dist
 *.pyi
 *.pyd
+*.onefile-build
