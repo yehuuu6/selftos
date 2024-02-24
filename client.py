@@ -1,5 +1,5 @@
-import classes.network as SelftosNetwork
-import classes.general as SelftosGeneral
+import library.network as SelftosNetwork
+import library.general as SelftosGeneral
 import utils.functions as SelftosUtils
 import socket
 import threading
@@ -27,8 +27,8 @@ user_name = input("User Name: ")
 #IP = input("Server IP: ")
 #PORT = int(input("Server Port: "))
 
-IP = "192.168.1.14"
-PORT = 7031
+IP = "localhost"
+PORT = 7030
 
 def package_handler(package: SelftosNetwork.Package) -> None:
     if not package.is_valid_package():
