@@ -9,3 +9,4 @@ dist
 *.pyi
 *.pyd
 *.onefile-build
+*.exe
