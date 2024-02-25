@@ -2,6 +2,8 @@ import utils.functions as SelftosUtils
 import json
 import os
 
+# TODO: Update validation rules for the config file, it's missing some rules.
+
 class ConfigLoader:
     PREFIX = "<ConfigLoader>"
     CONFIG_PATH = "config/core/config.json"
@@ -84,7 +86,7 @@ class ConfigLoader:
         "message_logging": str
     }
 
-    valid_logging_values = ["disabled", "messages", "ConfigLoader", "all"]
+    valid_logging_values = ["disabled", "messages", "console", "all"]
 
     # Check if the config file exists
     def load_config(self):
