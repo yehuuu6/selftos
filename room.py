@@ -460,10 +460,10 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
         if package.content == "":
             return
         if user.is_muted:
-            muted_inform_package = SelftosNetwork.Package(type = "SFSMessage", content = f"<SERVER> You are muted.", source = PREFIX)
+            muted_inform_package = SelftosNetwork.Package(type = "SFSMessage", content = f"{PREFIX} You are muted.", source = PREFIX)
             SelftosNetwork.send_package(muted_inform_package, sender)
             if config['show_muted_messages']:
-                SelftosUtils.printf(f"[red]MUTED[/red] | <[cyan]{user.name}[/cyan]> [strike]{escape(str(package.content))}[/strike]")
+                SelftosUtils.printf(f"[red]MUTED[/red] | [cyan]{user.name}[/cyan] [strike]{escape(str(package.content))}[/strike]")
             return
         broadcast(f"{escape(str(package.content))}", msg_source=f"{user.name}", render_on_console=True)
 
