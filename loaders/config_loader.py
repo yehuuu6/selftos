@@ -87,12 +87,26 @@ class ConfigLoader:
 
     # Check if the config file exists
     def load_config(self):
+        config_exists = os.path.exists("config")
+        if not config_exists:
+            SelftosUtils.printf(f"{self.PREFIX} [orange1]Warning:[/orange1] [yellow]config[/yellow] directory doesn't exist.")
+            SelftosUtils.printf(f"{self.PREFIX} Creating [yellow]config[/yellow] directory...")
+            try: os.mkdir("config")
+            except Exception as e:
+                SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] {e}")
+                exit(1)
+            else:
+                SelftosUtils.printf(f"{self.PREFIX} [yellow]config[/yellow] directory created successfully.")
         core_exists = os.path.exists("config/core")
         if not core_exists:
+            SelftosUtils.printf(f"{self.PREFIX} [orange1]Warning:[/orange1] [yellow]config/core[/yellow] directory doesn't exist.")
+            SelftosUtils.printf(f"{self.PREFIX} Creating [yellow]config/core[/yellow] directory...")
             try: os.mkdir("config/core")
             except Exception as e:
                 SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] {e}")
                 exit(1)
+            else:
+                SelftosUtils.printf(f"{self.PREFIX} [yellow]config/core[/yellow] directory created successfully.")
         is_ready = True
         for file in [self.CONFIG_PATH, self.ROLES_PATH, self.BANS_PATH, self.MUTES_PATH, self.ADMINS_PATH]:
             if not os.path.exists(file):
@@ -106,8 +120,7 @@ class ConfigLoader:
                     exit(1)
                 SelftosUtils.printf(f"{self.PREFIX} [yellow]{file}[/yellow] created successfully.")
         if not is_ready:
-            SelftosUtils.printf(f"{self.PREFIX} Some files were missing and have been created. Please edit them and boot the server.")
-            exit(1)
+            SelftosUtils.printf(f"{self.PREFIX} [orange1]Warning:[/orange1] Some files were missing and have been created. Please edit them and restart the server.")
 
     # Validate the core config file
     def validate_core_config(self) -> bool:
