@@ -273,6 +273,8 @@ class User:
             for role_data in roles:
                 if role_data["name"] == role:
                     if command in role_data["permissions"]:
+                        if len(args) == 0:
+                            return True
                         if "*" in role_data["permissions"][command]:
                             return True
                         for arg in args:
