@@ -32,7 +32,7 @@ class PluginLoader:
                         plugin_instance = plugin_class(online_users)
                         self.plugins.append(plugin_instance)
                 except Exception as e:
-                    SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] Failed to load [cyan]{module_name}[/cyan]. Cause: {e}")
+                    SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] Failed to load [cyan]{filename}[/cyan]. Cause: {e}")
                     continue
                 else:
                     SelftosUtils.printf(f"{self.PREFIX} Loaded [cyan]{plugin_instance.name}[/cyan] successfully!")
