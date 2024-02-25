@@ -380,6 +380,19 @@ def execute_revoke(args: List[str], executer: SelftosNetwork.User | None) -> Non
     else:
         SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] User not found."], executer)
 
+def execute_reload(args: List[str], executer: SelftosNetwork.User | None) -> None:
+    if len(args) == 0:
+        output_a = [
+            f"{PREFIX} Usage: reload <request>",
+            f"[magenta]> Available requests:[/magenta] [yellow]plugins[/yellow]"
+        ]
+        SelftosUtils.printc(output_a, executer)
+        return
+    elif args[0] == "plugins":
+        plugin_loader.reload_plugins(users_list)
+    else:
+        SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] You can't reload that."], executer)
+
 def execute_help(args: List[str], executer: SelftosNetwork.User | None) -> None:
     help_output = [
         f"{PREFIX} List of commands | [cyan]Arguments marked with * are required[/cyan]",
@@ -396,6 +409,7 @@ def execute_help(args: List[str], executer: SelftosNetwork.User | None) -> None:
         f"[magenta]> unban[/magenta] [yellow]{escape('[user*]')}[/yellow] - Unbans the specified user from the server.",
         f"[magenta]> who[/magenta] [yellow]{escape('[user*]')}[/yellow] - Shows [italic]detailed[/italic] information about the specified user.",
         f"[magenta]> clear[/magenta] - Clears the console.",
+        f"[magenta]> reload[/magenta] [yellow]{escape('[request*]')}[/yellow] - Reloads the specified systems.",
         f"[magenta]> shutdown[/magenta] [yellow]{escape('[reason]')}[/yellow] - Closes the server and broadcasts the reason to all the users in the room."
     ]
     SelftosUtils.printc(help_output, executer)
@@ -414,6 +428,7 @@ COMMANDS = {
         "ban": execute_ban,
         "unban": execute_unban,
         "clear": execute_clear,
+        "reload" : execute_reload,
         "help": execute_help
     }
 
@@ -569,7 +584,6 @@ async def handle_admin_input() -> None:
 def start() -> None:
     SelftosUtils.printf(f"{PREFIX} Starting plugin loader...")
     plugin_loader.load_plugins()
-    SelftosUtils.printf(f"{PREFIX} Successfully loaded {len(plugin_loader.plugins)} plugins.")
     SelftosUtils.printf(f"{PREFIX} Starting the server...")
     global is_running
     #connect_main_server()
