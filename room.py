@@ -380,6 +380,21 @@ def execute_revoke(args: List[str], executer: SelftosNetwork.User | None) -> Non
     else:
         SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] User not found."], executer)
 
+def execute_unload(args: List[str], executer: SelftosNetwork.User | None) -> None:
+    if len(args) == 0:
+        output_a = [
+            f"{PREFIX} Usage: unload <plugin_name>"
+        ]
+        SelftosUtils.printc(output_a, executer)
+        return
+    plugin_name = args[0]
+    for plugin in plugin_loader.plugins:
+        if plugin.name.replace(' ', '') == plugin_name:
+            plugin_loader.unload_plugin(plugin_name)
+            break
+    else:
+        SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] Plugin '{plugin_name}' not found."], executer)
+
 def execute_reload(args: List[str], executer: SelftosNetwork.User | None) -> None:
     if len(args) == 0:
         output_a = [
@@ -410,6 +425,7 @@ def execute_help(args: List[str], executer: SelftosNetwork.User | None) -> None:
         f"[magenta]> who[/magenta] [yellow]{escape('[user*]')}[/yellow] - Shows [italic]detailed[/italic] information about the specified user.",
         f"[magenta]> clear[/magenta] - Clears the console.",
         f"[magenta]> reload[/magenta] [yellow]{escape('[request*]')}[/yellow] - Reloads the specified systems.",
+        f"[magenta]> unload[/magenta] [yellow]{escape('[plugin*]')}[/yellow] - Unloads the specified plugin.",
         f"[magenta]> shutdown[/magenta] [yellow]{escape('[reason]')}[/yellow] - Closes the server and broadcasts the reason to all the users in the room."
     ]
     SelftosUtils.printc(help_output, executer)
@@ -429,6 +445,7 @@ COMMANDS = {
         "unban": execute_unban,
         "clear": execute_clear,
         "reload" : execute_reload,
+        "unload" : execute_unload,
         "help": execute_help
     }
 
