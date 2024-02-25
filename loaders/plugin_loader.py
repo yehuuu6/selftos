@@ -21,7 +21,7 @@ class PluginLoader:
         for filename in os.listdir(self.plugin_directory):
             if filename.endswith('.pyd'):
                 module_name = filename[:-4]  # Remove the '.pyd' extension
-                SelftosUtils.printf(f"{self.PREFIX} Loading plugin [cyan]{module_name}[/cyan]...")
+                SelftosUtils.printf(f"{self.PREFIX} Loading plugin [cyan]{filename}[/cyan]...")
                 try:
                     spec = importlib.util.spec_from_file_location(module_name, os.path.join(self.plugin_directory, filename))
                     if spec is not None:
