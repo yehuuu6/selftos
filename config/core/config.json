@@ -7,10 +7,10 @@
   "maxUsers": 5,
   "private": false,
   "owner": {
-    "uid": "uasguu1234j",
-    "name": "yehuuu"
+    "uid": "",
+    "name": ""
   },
   "show_muted_messages": true,
-  "show_executed_commands": false,
+  "show_executed_commands": true,
   "message_logging": "disabled"
 }
