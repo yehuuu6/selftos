@@ -45,7 +45,7 @@ class ConfigLoader:
     {
         "name": "Admin",
         "level": 2,
-        "color": "red3",
+        "color": "green2",
         "permissions": {
         "help": ["*"],
         "list": ["*"],
@@ -55,7 +55,8 @@ class ConfigLoader:
         "ban": ["*"],
         "unban": ["*"],
         "mute": ["*"],
-        "unmute": ["*"]
+        "unmute": ["*"],
+        "reload": ["plugins"],
         },
         "users": []
     }
