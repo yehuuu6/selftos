@@ -6,7 +6,9 @@ import library.network as SelftosNetwork
 
 from typing import List
 
-# TODO - Add validation for plugin class
+# TODO - Add validation for plugin class,
+# TODO - Add unload method for specified plugin
+# BUG - Reloading plugins cause online users to be duplicated in the room's online users list which is weird.
 
 class PluginLoader:
     PREFIX = "<PluginLoader>"
@@ -53,3 +55,13 @@ class PluginLoader:
         # Load plugins again
         self.load_plugins(online_users)
         SelftosUtils.printf(f"{self.PREFIX} Plugins reloaded successfully!")
+    
+    def unload_plugin(self, plugin_name: str):
+        target_module_name = plugin_name.replace(" ", "")
+        for plugin in self.plugins:
+            module_name = plugin.name.replace(" ", "")
+            if module_name == target_module_name:
+                self.plugins.remove(plugin)
+                SelftosUtils.printf(f"{self.PREFIX} Unloaded [cyan]{module_name}.pyd[/cyan] successfully!")
+                return
+        SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] Plugin [cyan]{target_module_name}.pyd[/cyan] not found!")
