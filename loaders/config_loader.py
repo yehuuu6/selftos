@@ -204,5 +204,5 @@ class ConfigLoader:
                 SelftosUtils.printf(f"{self.PREFIX} [yellow]{room_config['owner']['name']}[/yellow] has been added to the operators list.")
 
         self.show_room_config(room_config)
-        SelftosUtils.printf(f"{self.PREFIX} Config loaded successfully.")
+        SelftosUtils.printf(f"{self.PREFIX} Finished loading the config file.")
         return room_config
