@@ -46,13 +46,13 @@ def printc(messages: List[str], executer: SelftosNetwork.User | None) -> None:
         else:
             output += f"{line}"
     if executer is not None:
-        package = SelftosNetwork.Package(type = "SFSMessage", content = output, source = "[magenta]SERVER[/magenta]")
-        SelftosNetwork.send_package(package, executer.client)
+        package = SelftosNetwork.Package(type = "SFSMessage", content = output)
+        SelftosNetwork.send_package(package, executer.sock)
     else:
         printf(output)
 
 def get_user_by_socket(sock: socket.socket, users_list: List[SelftosNetwork.User]) -> SelftosNetwork.User | None:
     for user in users_list:
-        if user.client == sock:
+        if user.sock == sock:
             return user
     return None
