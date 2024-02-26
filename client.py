@@ -11,8 +11,6 @@ import string
 
 COMPUTER = socket.gethostname() # This is the computer name, used for the package source.
 
-FILE_TYPE = "CLIENT" # This is the sender type for the package. MAYBE WE CAN USE THIS AS USER NAME SO WE DONT HAVE TO SEARCH FOR IT IN THE SERVER.
-
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 is_running = False
@@ -35,7 +33,7 @@ def package_handler(package: SelftosNetwork.Package) -> None:
         SelftosUtils.printf("Invalid package received, something is wrong!")
 
     if package.type == "SFSHandshake" and package.content == "nickname":
-        user_package = SelftosNetwork.Package(type = "SFSUserData", content = user.get_json(), source = FILE_TYPE)
+        user_package = SelftosNetwork.Package(type = "SFSUserData", content = user.get_json())
         SelftosNetwork.send_package(user_package, client_socket)
 
     elif package.type == "SFSMessage":
@@ -55,9 +53,9 @@ async def write() -> None:
                 break
             msg = f"{msg}"
             if msg.startswith("/"):
-                package = SelftosNetwork.Package(type = "SFSCommand", content = msg.replace("/", "", 1), source = FILE_TYPE)
+                package = SelftosNetwork.Package(type = "SFSCommand", content = msg.replace("/", "", 1))
             else:
-                package = SelftosNetwork.Package(type = "SFSMessage", content = msg, source = FILE_TYPE)
+                package = SelftosNetwork.Package(type = "SFSMessage", content = msg)
             SelftosNetwork.send_package(package, client_socket)
         except Exception as e:
             SelftosUtils.printf("Error: " + str(e))
@@ -87,7 +85,7 @@ def connect_to_room() -> None:
     global user
     try:
         client_socket.connect((IP, PORT))
-        user = SelftosGeneral.User(id = user_id, name = user_name, client = client_socket)
+        user = SelftosGeneral.User(id = user_id, name = user_name, sock = client_socket)
         is_running = True
     except ConnectionRefusedError:
         SelftosUtils.printf("Connection refused by the room.")
