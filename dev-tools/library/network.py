@@ -19,12 +19,12 @@ class User:
     ops_list_path = "config/ops.json"
     roles_list_path = "config/core/roles.json"
 
-    def __init__(self, id: str, name: str, client: socket.socket):
+    def __init__(self, id: str, name: str, sock: socket.socket):
         self.id = id
         self.name = name
 
-        self.client = client
-        self.address = client.getpeername()
+        self.sock = sock
+        self.address = sock.getpeername()
 
         self.is_op = self.get_user_status(self.ops_list_path)
         self.is_banned = self.get_user_status(self.bans_list_path)
@@ -117,10 +117,9 @@ class Package:
         "SFSRoomData"
     ]
 
-    def __init__(self, type: str, content: dict | str, source: str):
+    def __init__(self, type: str, content: dict | str):
         self.type = type
         self.content = content
-        self.source = source # The source of the package (user name or server)
 
     def is_valid_package(self) -> bool:
         """
