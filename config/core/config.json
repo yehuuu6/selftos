@@ -11,6 +11,5 @@
     "name": ""
   },
   "show_muted_messages": true,
-  "show_executed_commands": true,
-  "message_logging": "disabled"
+  "show_executed_commands": true
 }
