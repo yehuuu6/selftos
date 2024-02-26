@@ -8,7 +8,7 @@ from typing import List
 
 # TODO - Add validation for plugin class,
 # TODO - Add unload method for specified plugin
-# BUG - Reloading plugins cause online users to be duplicated in the room's online users list which is weird.
+# FIXED BUG - Reloading plugins cause online users to be duplicated in the room's online users list which is weird.
 
 class PluginLoader:
     PREFIX = "<PluginLoader>"
