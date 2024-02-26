@@ -16,12 +16,12 @@ class User:
     ops_list_path = "config/ops.json"
     roles_list_path = "config/core/roles.json"
 
-    def __init__(self, id: str, name: str, client: socket.socket):
+    def __init__(self, id: str, name: str, sock: socket.socket):
         self.id = id
         self.name = name
 
-        self.client = client
-        self.address = client.getpeername()
+        self.sock = sock
+        self.address = sock.getpeername()
 
         self.is_op = self.get_user_status(self.ops_list_path)
         self.is_banned = self.get_user_status(self.bans_list_path)
@@ -285,7 +285,7 @@ class User:
         """
         Disconnects the user from the server.
         """
-        self.client.close()
+        self.sock.close()
 
 class Package:
     """
@@ -300,10 +300,9 @@ class Package:
         "SFSRoomData"
     ]
 
-    def __init__(self, type: str, content: dict | str, source: str):
+    def __init__(self, type: str, content: dict | str):
         self.type = type
         self.content = content
-        self.source = source # The source of the package (user name or server)
 
     def is_valid_package(self) -> bool:
         """
@@ -367,7 +366,7 @@ def get_package(sender: socket.socket) -> Package | None:
         # the client to disconnect by force.
         return None
 
-    package = Package(data["type"], data["content"], data["source"])
+    package = Package(data["type"], data["content"])
 
     return package
 
@@ -380,8 +379,7 @@ def send_package(package: Package, target: socket.socket) -> None:
     """
     data: str = json.dumps({
         "type": package.type,
-        "content": package.content,
-        "source": package.source
+        "content": package.content
     })
 
     #data = f"{len(data):<{HEADER_SIZE}}" + data
