@@ -28,7 +28,6 @@ class ConfigLoader:
         },
         "show_muted_messages": True, # Prints muted user messages to the ConfigLoader if True
         "show_executed_commands": True, # Prints executed commands by users to the ConfigLoader if True
-        "message_logging": "disabled", # Creates a log file. Values: "disabled", "messages", "ConfigLoader", "all"
     }
 
     roles_config = [
@@ -83,10 +82,7 @@ class ConfigLoader:
         "owner": object,
         "show_muted_messages": bool,
         "show_executed_commands": bool,
-        "message_logging": str
     }
-
-    valid_logging_values = ["disabled", "messages", "console", "all"]
 
     # Check if the config file exists
     def load_config(self):
@@ -140,9 +136,6 @@ class ConfigLoader:
             if not isinstance(room_config[key], self.valid_key_types[key]):
                 SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] Option [yellow]{key}[/yellow] value type is not valid in '{self.CONFIG_PATH}'.")
                 return False
-            if key == "message_logging" and room_config[key] not in self.valid_logging_values:
-                SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] Option [bold italic yellow]{key}[/bold italic yellow] doesn't have a valid value ('{room_config[key]}') in '{self.CONFIG_PATH}'.")
-                return False
         return True
 
     def set_roles_to_config(self) -> bool:
@@ -169,7 +162,6 @@ class ConfigLoader:
         SelftosUtils.printf(f"{self.PREFIX} Owner is set to [bold yellow]{config['owner']['name']}[/bold yellow].")
         SelftosUtils.printf(f"{self.PREFIX} Show muted messages is set to [bold yellow]{config['show_muted_messages']}[/bold yellow].")
         SelftosUtils.printf(f"{self.PREFIX} Show executed commands is set to [bold yellow]{config['show_executed_commands']}[/bold yellow].")
-        SelftosUtils.printf(f"{self.PREFIX} Message logging is set to [bold yellow]{config['message_logging']}[/bold yellow].")
         SelftosUtils.printf(f"{self.PREFIX} Loading roles...")
         SelftosUtils.printf(f"{self.PREFIX} Default role is set to [bold yellow]{config['default_role']}[/bold yellow].")
         for role in config['roles']:
@@ -204,5 +196,5 @@ class ConfigLoader:
                 SelftosUtils.printf(f"{self.PREFIX} [yellow]{room_config['owner']['name']}[/yellow] has been added to the operators list.")
 
         self.show_room_config(room_config)
-        SelftosUtils.printf(f"{self.PREFIX} Finished loading the config file.")
+        SelftosUtils.printf(f"{self.PREFIX} Finished loading the config.")
         return room_config
