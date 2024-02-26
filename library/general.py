@@ -6,10 +6,10 @@ from socket import socket
 import json
 
 class User:
-    def __init__(self, id: str, name: str, client: socket):
+    def __init__(self, id: str, name: str, sock: socket):
         self.id = id
         self.name = name
-        self.client = client
+        self.sock = sock
     
     def get_json(self) -> str:
         data = {
