@@ -23,9 +23,9 @@ class BadWordFilter:
         for user in self.online_users:
             if user == exclude:
                 continue
-            msg_package = SelftosNetwork.Package(type="SFSMessage", content=message, source=f"<{self.prefix}>")
+            msg_package = SelftosNetwork.Package(type="SFSMessage", content=message)
             try:
-                SelftosNetwork.send_package(package=msg_package, target=user.client)
+                SelftosNetwork.send_package(package=msg_package, target=user.sock)
             except:
                 SelftosUtils.printf(f"<{self.prefix}> Failed to send message to [cyan]{user.name}[/cyan]")
 
@@ -37,10 +37,10 @@ class BadWordFilter:
         for bad_word in bad_words:
             if bad_word in message:
                 self.broadcast(f"{user.name} used a bad word and was kicked from the server.", render_on_server=True, exclude=user)
-                inform_package = SelftosNetwork.Package(type="SFSMessage", content=f"{self.prefix} You have been kicked out for using bad words!", source=f"<{self.prefix}>")
-                SelftosNetwork.send_package(package=inform_package, target=user.client)
+                inform_package = SelftosNetwork.Package(type="SFSMessage", content=f"{self.prefix} You have been kicked out for using bad words!")
+                SelftosNetwork.send_package(package=inform_package, target=user.sock)
                 user.disconnect()
-                break
+                return False
         return True
 
     def on_user_joined(self, user: SelftosNetwork.User) -> None:

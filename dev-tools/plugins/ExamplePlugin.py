@@ -25,9 +25,9 @@ class ExamplePlugin:
         for user in self.online_users:
             if user == exclude:
                 continue
-            msg_package = SelftosNetwork.Package(type="SFSMessage", content=message, source=f"<{self.prefix}>")
+            msg_package = SelftosNetwork.Package(type="SFSMessage", content=message)
             try:
-                SelftosNetwork.send_package(package=msg_package, target=user.client)
+                SelftosNetwork.send_package(package=msg_package, target=user.sock)
             except:
                 SelftosUtils.printf(f"<{self.prefix}> Failed to send message to [cyan]{user.name}[/cyan]")
 
