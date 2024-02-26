@@ -483,6 +483,7 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
         broadcast(f"[cyan]{user.name}[/cyan] has joined the room.", render_on_console=True, exclude=user)
 
         for plugin in plugin_loader.plugins:
+            plugin.set_online_users(users_list)
             plugin.on_user_joined(user)
 
     elif package.type == "SFSMessage":
@@ -545,6 +546,7 @@ def client_handler(client: socket.socket, address: tuple) -> None:
                     users_list.remove(user)
                     broadcast(f"[cyan]{user.name}[/cyan] has left the room.", render_on_console=True)
                     for plugin in plugin_loader.plugins:
+                        plugin.set_online_users(users_list)
                         plugin.on_user_left(user)
             break
 
