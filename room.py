@@ -387,13 +387,16 @@ def execute_unload(args: List[str], executer: SelftosNetwork.User | None) -> Non
         ]
         SelftosUtils.printc(output_a, executer)
         return
-    plugin_name = args[0]
-    for plugin in plugin_loader.plugins:
-        if plugin.name.replace(' ', '') == plugin_name:
-            plugin_loader.unload_plugin(plugin_name)
-            break
-    else:
-        SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] Plugin '{plugin_name}' not found."], executer)
+    elif len(args) > 0:
+        plugin_name = args[0]
+        for plugin in plugin_loader.plugins:
+            if plugin.name.replace(' ', '') == plugin_name:
+                result = plugin_loader.unload_plugin(plugin_name)
+                if result:
+                    SelftosUtils.printc([f"{PREFIX} [green3]Success:[/green3] Plugin [cyan]{plugin_name}[/cyan] unloaded."], executer)
+                break
+        else:
+            SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] Plugin [cyan]{plugin_name}[/cyan] not found."], executer)
 
 def execute_reload(args: List[str], executer: SelftosNetwork.User | None) -> None:
     if len(args) == 0:
@@ -404,7 +407,9 @@ def execute_reload(args: List[str], executer: SelftosNetwork.User | None) -> Non
         SelftosUtils.printc(output_a, executer)
         return
     elif args[0] == "plugins":
-        plugin_loader.reload_plugins(users_list)
+        result = plugin_loader.reload_plugins(users_list)
+        if result:
+            SelftosUtils.printc([f"{PREFIX} [green3]Success:[/green3] Plugins reloaded."], executer)
     else:
         SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] You can't reload that."], executer)
 
@@ -546,7 +551,7 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
             return
         else:
             if config['show_executed_commands']:
-                SelftosUtils.printf(f"{PREFIX} [cyan]{user.name}[/cyan] executed command: [yellow]'{command} {args}'[/yellow]")
+                SelftosUtils.printf(f"{PREFIX} [cyan]{user.name}[/cyan] executed command: [yellow]{command} {args}[/yellow]")
             requested_command(args, executer = user)
 
 def client_handler(client: socket.socket, address: tuple) -> None:
