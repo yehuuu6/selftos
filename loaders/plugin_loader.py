@@ -29,6 +29,11 @@ class PluginLoader:
 
 
     def load_plugins(self):
+        if not os.path.exists(self.plugin_directory):
+            os.mkdir(self.plugin_directory)
+            SelftosUtils.printf(f"{self.PREFIX} [orange1]Warning:[/orange1] No plugin directory found. Created a new one.")
+            return
+        
         sys.path.append(os.path.abspath(self.plugin_directory))
 
         for filename in os.listdir(self.plugin_directory):
