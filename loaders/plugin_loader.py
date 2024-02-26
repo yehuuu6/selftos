@@ -17,7 +17,7 @@ class PluginLoader:
         self.plugin_directory = "plugins"
         self.plugins = []
 
-    def load_plugins(self, online_users: List[SelftosNetwork.User] = []):
+    def load_plugins(self):
         sys.path.append(os.path.abspath(self.plugin_directory))
 
         for filename in os.listdir(self.plugin_directory):
@@ -31,7 +31,7 @@ class PluginLoader:
                         spec.loader.exec_module(module) if spec.loader is not None else None
                         
                         plugin_class = getattr(module, module_name)
-                        plugin_instance = plugin_class(online_users)
+                        plugin_instance = plugin_class()
                         self.plugins.append(plugin_instance)
                 except Exception as e:
                     SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] Failed to load [cyan]{filename}[/cyan]. Cause: {e}")
@@ -53,7 +53,9 @@ class PluginLoader:
         sys.path.remove(os.path.abspath(self.plugin_directory))
         
         # Load plugins again
-        self.load_plugins(online_users)
+        self.load_plugins()
+        for plugin in self.plugins:
+            plugin.set_online_users(online_users)
         SelftosUtils.printf(f"{self.PREFIX} Plugins reloaded successfully!")
     
     def unload_plugin(self, plugin_name: str):
