@@ -121,7 +121,7 @@ def execute_say(args: List[str], executer: SelftosNetwork.User | None) -> None:
         SelftosUtils.printc([f"{PREFIX} Usage: say <message>"], executer)
         return
     msg = " ".join(args)
-    SelftosUtils.broadcast(PREFIX, users_list, msg, f"[gold3]{escape('[')}[/gold3][red]Console[/red][gold3]{escape(']')}[/gold3]", render_on_console=True, exclude=executer)
+    SelftosUtils.broadcast(PREFIX, users_list, msg, f"[gold3]{escape('[')}[/gold3][red]Console[/red][gold3]{escape(']')}[/gold3]", render_on_console=True)
 
 def execute_who(args: List[str], executer: SelftosNetwork.User | None) -> None:
     if len(args) == 0:
