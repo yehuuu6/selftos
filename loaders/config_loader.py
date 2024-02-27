@@ -26,8 +26,8 @@ class ConfigLoader:
             "uid": "", # User ID
             "name": "" # User name
         },
-        "show_muted_messages": True, # Prints muted user messages to the ConfigLoader if True
-        "show_executed_commands": True, # Prints executed commands by users to the ConfigLoader if True
+        "show_muted_messages": True, # Prints muted user messages to the console if True
+        "show_executed_commands": True, # Prints executed commands by users to the console if True
     }
 
     roles_config = [
