@@ -44,7 +44,6 @@ def connect_main_server() -> None:
 def broadcast(msg: str, msg_source: str = PREFIX, render_on_console: bool = False, exclude: SelftosNetwork.User | None = None) -> None:
     """
     Broadcast a message to all the users in the room.
-    TODO: Join and leave messages has double <> fix it.
     """
     for user in users_list:
         if msg_source != PREFIX and msg_source == user.name:
@@ -389,12 +388,9 @@ def execute_unload(args: List[str], executer: SelftosNetwork.User | None) -> Non
         return
     elif len(args) > 0:
         plugin_name = args[0]
-        for plugin in plugin_loader.plugins:
-            if plugin.name.replace(' ', '') == plugin_name:
-                result = plugin_loader.unload_plugin(plugin_name)
-                if result:
-                    SelftosUtils.printc([f"{PREFIX} [green3]Success:[/green3] Plugin [cyan]{plugin_name}[/cyan] unloaded."], executer)
-                break
+        result = plugin_loader.unload_plugin(plugin_name)
+        if result:
+            SelftosUtils.printc([f"{PREFIX} [green3]Success:[/green3] Plugin [cyan]{plugin_name}[/cyan] has been unloaded."], executer)
         else:
             SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] Plugin [cyan]{plugin_name}[/cyan] not found."], executer)
 
@@ -489,7 +485,7 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
 
         for plugin in plugin_loader.plugins:
             try:
-                plugin.set_online_users(users_list)
+                plugin.online_users = users_list
                 plugin.on_user_joined(user)
             except Exception as e:
                 SelftosUtils.printf(f"{PREFIX} [red]Error:[/red] Plugin '{plugin.name}' has failed to handle user join event. Cause: {e}")
@@ -576,7 +572,7 @@ def client_handler(client: socket.socket, address: tuple) -> None:
                     broadcast(f"[cyan]{user.name}[/cyan] has left the room.", render_on_console=True)
                     for plugin in plugin_loader.plugins:
                         try:
-                            plugin.set_online_users(users_list)
+                            plugin.online_users = users_list
                             plugin.on_user_left(user)
                         except Exception as e:
                             SelftosUtils.printf(f"{PREFIX} [red]Error:[/red] Plugin '{plugin.name}' has failed to handle user left event. Cause: {e}")
