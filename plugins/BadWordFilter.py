@@ -13,19 +13,6 @@ class BadWordFilter:
         self.prefix = "<[red3]BadWordFilter[/red3]>"
         self.online_users: List[SelftosNetwork.User] = []
 
-    def broadcast(self, message: str, render_on_server: bool = False, exclude: SelftosNetwork.User | None = None):
-        message = f"{self.prefix} {message}"  # Add the prefix to the message
-        if render_on_server:
-            SelftosUtils.printf(message)
-        for user in self.online_users:
-            if user == exclude:
-                continue
-            msg_package = SelftosNetwork.Package(type="SFSMessage", content=message)
-            try:
-                SelftosNetwork.send_package(package=msg_package, target=user.sock)
-            except:
-                SelftosUtils.printf(f"<{self.prefix}> Failed to send message to [cyan]{user.name}[/cyan]")
-
     def on_package_received(self, client_sock: socket.socket, package: SelftosNetwork.Package) -> bool:
         return True
 
@@ -33,7 +20,7 @@ class BadWordFilter:
         bad_words = ["badword1", "badword2", "badword3"]
         for bad_word in bad_words:
             if bad_word in message:
-                self.broadcast(f"{user.name} used a bad word and was kicked from the server.", render_on_server=True, exclude=user)
+                SelftosUtils.broadcast(self.prefix, self.online_users, f"{user.name} used a bad word and was kicked from the server.", render_on_console=True, exclude=user)
                 inform_package = SelftosNetwork.Package(type="SFSMessage", content=f"{self.prefix} You have been kicked out for using bad words!")
                 SelftosNetwork.send_package(package=inform_package, target=user.sock)
                 user.disconnect()
