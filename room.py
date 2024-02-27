@@ -41,43 +41,18 @@ def connect_main_server() -> None:
         SelftosUtils.printf(f"{PREFIX} [red]Error:[/red] Connection refused by the main server.")
         exit(1)
 
-def broadcast(msg: str, msg_source: str = PREFIX, render_on_console: bool = False, exclude: SelftosNetwork.User | None = None) -> None:
-    """
-    Broadcast a message to all the users in the room.
-    """
-    for user in users_list:
-        if msg_source != PREFIX and msg_source == user.name:
-            role = user.main_role
-            color = user.color
-            # [[color]role[/color]] 
-            perm_indicator = f"[gold3]{escape('[')}[/gold3][{color}]{role}[/{color}][gold3]{escape(']')}[/gold3] "
-            break
-    else:
-        perm_indicator = ""
-    
-    msg_source = f"[cyan]{msg_source}[/cyan]" if msg_source != PREFIX else msg_source
-
-    msg = f"{perm_indicator}{msg_source} {msg}"
-    if render_on_console:
-        SelftosUtils.printf(msg)
-    for user in users_list:
-        if user == exclude:
-            continue
-        package = SelftosNetwork.Package(type = "SFSMessage", content = msg)
-        SelftosNetwork.send_package(package, user.sock)
-
-def shutdown(users = users_list, reason: str = "No reason was specified.") -> None:
+def shutdown(reason: str = "No reason was specified.") -> None:
     """
     Terminates the server with the specified reason.
     """
     global is_running
-    broadcast(f"Shutting down! [yellow]({reason})[/yellow]", render_on_console=True)
-    for user in users:
+    SelftosUtils.broadcast(prefix=PREFIX, users=users_list, message=f"Shutting down! [yellow]({reason})[/yellow]", render_on_console=True)
+    for user in users_list:
         user.disconnect()
     is_running = False
     global input_loop
     input_loop.stop()
-    users.clear()
+    users_list.clear()
     room_socket.close()
 
 ################ COMMANDS START ################
@@ -146,7 +121,7 @@ def execute_say(args: List[str], executer: SelftosNetwork.User | None) -> None:
         SelftosUtils.printc([f"{PREFIX} Usage: say <message>"], executer)
         return
     msg = " ".join(args)
-    broadcast(msg, f"[gold3]{escape('[')}[/gold3][red]Console[/red][gold3]{escape(']')}[/gold3]", render_on_console=True)
+    SelftosUtils.broadcast(PREFIX, users_list, msg, f"[gold3]{escape('[')}[/gold3][red]Console[/red][gold3]{escape(']')}[/gold3]", render_on_console=True, exclude=executer)
 
 def execute_who(args: List[str], executer: SelftosNetwork.User | None) -> None:
     if len(args) == 0:
@@ -172,7 +147,7 @@ def execute_kick(args: List[str], executer: SelftosNetwork.User | None) -> None:
                 package = SelftosNetwork.Package(type = "SFSMessage", content = f"{PREFIX} You have been kicked from the server by {executed_by}.")
                 SelftosNetwork.send_package(package, user.sock)
                 user.disconnect()
-                broadcast(f"[cyan]{user.name}[/cyan] has been kicked from the server by {executed_by}.", render_on_console=True, exclude=user)
+                SelftosUtils.broadcast(PREFIX, users_list, f"[cyan]{user.name}[/cyan] has been kicked from the server by {executed_by}.", render_on_console=True, exclude=user)
                 break
         else:
             SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] User not found."], executer)
@@ -196,7 +171,7 @@ def execute_mute(args: List[str], executer: SelftosNetwork.User | None) -> None:
                     return
                 package = SelftosNetwork.Package(type = "SFSMessage", content = f"{PREFIX} You have been muted by {executed_by}.")
                 SelftosNetwork.send_package(package, user.sock)
-                broadcast(f"[cyan]{user.name}[/cyan] has been muted by {executed_by}.", render_on_console=True, exclude=user)
+                SelftosUtils.broadcast(PREFIX, users_list, f"[cyan]{user.name}[/cyan] has been muted by {executed_by}.", render_on_console=True, exclude=user)
                 break
         else:
             SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] User not found."], executer)
@@ -215,7 +190,7 @@ def execute_unmute(args: List[str], executer: SelftosNetwork.User | None) -> Non
                     return
                 package = SelftosNetwork.Package(type = "SFSMessage", content = f"{PREFIX} You have been unmuted by {executed_by}.")
                 SelftosNetwork.send_package(package, user.sock)
-                broadcast(f"[cyan]{user.name}[/cyan] has been unmuted by {executed_by}.", render_on_console=True, exclude=user)
+                SelftosUtils.broadcast(PREFIX, users_list, f"[cyan]{user.name}[/cyan] has been unmuted by {executed_by}.", render_on_console=True, exclude=user)
                 break
         else:
             SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] User not found."], executer)
@@ -234,7 +209,7 @@ def execute_op(args: List[str], executer: SelftosNetwork.User | None) -> None:
                     return
                 package = SelftosNetwork.Package(type = "SFSMessage", content = f"{PREFIX} You have been granted operator privileges by {executed_by}.")
                 SelftosNetwork.send_package(package, user.sock)
-                broadcast(f"[cyan]{user.name}[/cyan] has been granted operator privileges by {executed_by}.", render_on_console=True, exclude=user)
+                SelftosUtils.broadcast(PREFIX, users_list, f"[cyan]{user.name}[/cyan] has been granted operator privileges by {executed_by}.", render_on_console=True, exclude=user)
                 break
         else:
             SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] User not found."], executer)
@@ -253,7 +228,7 @@ def execute_deop(args: List[str], executer: SelftosNetwork.User | None) -> None:
                     return
                 package = SelftosNetwork.Package(type = "SFSMessage", content = f"{PREFIX} Your operator privileges have been [red]revoked[/red] by {executed_by}.")
                 SelftosNetwork.send_package(package, user.sock)
-                broadcast(f"[cyan]{user.name}[/cyan] has been revoked operator privileges by {executed_by}.", render_on_console=True, exclude=user)
+                SelftosUtils.broadcast(PREFIX, users_list, f"[cyan]{user.name}[/cyan] has been revoked operator privileges by {executed_by}.", render_on_console=True, exclude=user)
                 break
         else:
             SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] User not found."], executer)
@@ -278,7 +253,7 @@ def execute_ban(args: List[str], executer: SelftosNetwork.User | None) -> None:
                 package = SelftosNetwork.Package(type = "SFSMessage", content = f"{PREFIX} You have been banned from the server by {executed_by}")
                 SelftosNetwork.send_package(package, user.sock)
                 user.disconnect()
-                broadcast(f"[cyan]{user.name}[/cyan] has been banned from the server by {executed_by}", render_on_console=True, exclude=user)
+                SelftosUtils.broadcast(PREFIX, users_list, f"[cyan]{user.name}[/cyan] has been banned from the server by {executed_by}.", render_on_console=True, exclude=user)
                 break
         else:
             SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] User not found."], executer)
@@ -296,7 +271,7 @@ def execute_unban(args: List[str], executer: SelftosNetwork.User | None) -> None
                 bans.remove(ban)
                 with open(SelftosNetwork.User.bans_list_path, "w") as bans_file:
                     json.dump(bans, bans_file, indent=2)
-                broadcast(f"[cyan]{user_name}[/cyan] has been unbanned from the server by {executed_by}", render_on_console=True)
+                SelftosUtils.broadcast(PREFIX, users_list, f"[cyan]{user_name}[/cyan] has been unbanned from the server by {executed_by}", render_on_console=True)
                 break
         else:
             SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] User is not banned."], executer)
@@ -486,9 +461,9 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
         users_list.append(user)
         if user.name == OWNER['name']:
             user.is_op = True
-            broadcast(f"Attention! an operator is joining to the room.", render_on_console=True)
+            SelftosUtils.broadcast(PREFIX, users_list, f"[cyan]{user.name}[/cyan] has joined the room.", render_on_console=True)
 
-        broadcast(f"[cyan]{user.name}[/cyan] has joined the room.", render_on_console=True, exclude=user)
+        SelftosUtils.broadcast(PREFIX, users_list, f"[cyan]{user.name}[/cyan] has joined the room.", render_on_console=True, exclude=user)
 
         for plugin in plugin_loader.plugins:
             try:
@@ -522,8 +497,7 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
                 if not broadcast_authorization:
                     return
 
-
-        broadcast(f"{escape(str(package.content))}", msg_source=f"{user.name}", render_on_console=True)
+        SelftosUtils.broadcast(PREFIX, users_list, f"{escape(str(package.content))}", source=f"{user.name}", render_on_console=True)
 
     elif package.type == "SFSCommand":
         user = SelftosUtils.get_user_by_socket(sock = sender, users_list = users_list)
@@ -579,7 +553,7 @@ def client_handler(client: socket.socket, address: tuple) -> None:
                 user = SelftosUtils.get_user_by_socket(client, users_list)
                 if user is not None:
                     users_list.remove(user)
-                    broadcast(f"[cyan]{user.name}[/cyan] has left the room.", render_on_console=True)
+                    SelftosUtils.broadcast(PREFIX, users_list, f"[cyan]{user.name}[/cyan] has left the room.", render_on_console=True)
                     for plugin in plugin_loader.plugins:
                         try:
                             plugin.online_users = users_list
