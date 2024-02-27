@@ -42,3 +42,9 @@ def printc(messages: List[str], executer: SelftosNetwork.User | None) -> None:
 
 def get_user_by_socket(sock: socket.socket, users_list: List[SelftosNetwork.User]) -> SelftosNetwork.User | None:
     return None
+
+def broadcast(prefix: str, users: List[SelftosNetwork.User], message: str, source: str | None = None, render_on_console: bool = False, exclude: SelftosNetwork.User | None = None) -> None:
+    """
+    Broadcast a message to all the users in the room.
+    """
+    return None
