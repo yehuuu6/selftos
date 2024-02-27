@@ -6,10 +6,6 @@ import library.network as SelftosNetwork
 
 from typing import List
 
-# DONE TODO - Add validation for plugin class,
-# DONE TODO - Add unload method for specified plugin
-# FIXED BUG - Reloading plugins cause online users to be duplicated in the room's online users list which is weird.
-
 DEBUG_MODE = True # Set to True to load .py files instead of .pyd files for hot-reloading
 
 file_extension = ".py" if DEBUG_MODE else ".pyd"
@@ -23,7 +19,7 @@ class PluginLoader:
 
     def validate_plugin(self, plugin_instance, module_name: str) -> bool:
         required_properties = ["name", "version", "description", "author", "prefix", "online_users",
-                               "set_online_users", "on_package_received", "on_message_received", "on_user_joined", "on_user_left", "on_command_executed"]
+                                "on_package_received", "on_message_received", "on_user_joined", "on_user_left", "on_command_executed"]
         # Check properties
         for prop in required_properties:
             if not hasattr(plugin_instance, prop):
@@ -82,7 +78,7 @@ class PluginLoader:
             SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] Failed to reload plugins. Cause: {e}")
             return False
         for plugin in self.plugins:
-            plugin.set_online_users(online_users)
+            plugin.online_users = online_users
         SelftosUtils.printf(f"{self.PREFIX} Plugins reloaded successfully.")
         return True
     
