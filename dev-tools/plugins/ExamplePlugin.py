@@ -15,9 +15,6 @@ class ExamplePlugin:
         self.prefix = "<[cyan]ExamplePlugin[/cyan]>"
         self.online_users: List[SelftosNetwork.User] = []
 
-    def set_online_users(self, users_from_server: List[SelftosNetwork.User] = []) -> None:
-        self.online_users = users_from_server
-
     def broadcast(self, message: str, render_on_server: bool = False, exclude: SelftosNetwork.User | None = None):
         message = f"{self.prefix} {message}"  # Add the prefix to the message
         if render_on_server:
