@@ -15,19 +15,6 @@ class ExamplePlugin:
         self.prefix = "<[cyan]ExamplePlugin[/cyan]>"
         self.online_users: List[SelftosNetwork.User] = []
 
-    def broadcast(self, message: str, render_on_server: bool = False, exclude: SelftosNetwork.User | None = None):
-        message = f"{self.prefix} {message}"  # Add the prefix to the message
-        if render_on_server:
-            SelftosUtils.printf(message)
-        for user in self.online_users:
-            if user == exclude:
-                continue
-            msg_package = SelftosNetwork.Package(type="SFSMessage", content=message)
-            try:
-                SelftosNetwork.send_package(package=msg_package, target=user.sock)
-            except:
-                SelftosUtils.printf(f"<{self.prefix}> Failed to send message to [cyan]{user.name}[/cyan]")
-
     def on_package_received(self, client_sock: socket.socket, package: SelftosNetwork.Package) -> bool:
         return True
 
