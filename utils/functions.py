@@ -6,6 +6,7 @@ from io import StringIO
 from rich.console import Console
 from prompt_toolkit import ANSI, print_formatted_text
 from typing import List
+from rich.markup import escape
 
 import library.network as SelftosNetwork
 import socket
@@ -56,3 +57,31 @@ def get_user_by_socket(sock: socket.socket, users_list: List[SelftosNetwork.User
         if user.sock == sock:
             return user
     return None
+
+def broadcast(prefix: str, users: List[SelftosNetwork.User], message: str, source: str | None = None, render_on_console: bool = False, exclude: SelftosNetwork.User | None = None) -> None:
+    """
+    Broadcast a message to all the users in the room.
+    """
+    if source is None:
+        source = prefix
+        
+    for user in users:
+        if source != prefix and source == user.name:
+            role = user.main_role
+            color = user.color
+            # [[color]role[/color]] 
+            perm_indicator = f"[gold3]{escape('[')}[/gold3][{color}]{role}[/{color}][gold3]{escape(']')}[/gold3] "
+            break
+    else:
+        perm_indicator = ""
+    
+    source = f"[cyan]{source}[/cyan]" if source != prefix else source
+
+    message = f"{perm_indicator}{source} {message}"
+    if render_on_console:
+        printf(message)
+    for user in users:
+        if user == exclude:
+            continue
+        package = SelftosNetwork.Package(type = "SFSMessage", content = message)
+        SelftosNetwork.send_package(package, user.sock)
