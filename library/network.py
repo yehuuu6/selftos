@@ -94,14 +94,13 @@ class User:
         }
         return json.dumps(data)
 
-    def ban(self, time_h: int) -> bool:
+    def ban(self) -> bool:
         """
-        Ban user for a specific amount of time (in hours)
+        Ban the user from the server.
         """
         add = {
             "uid": self.id,
-            "name": self.name,
-            "time": time_h
+            "name": self.name
         }
 
         # Check if the user is already banned by checking the bans.json file.
@@ -139,14 +138,13 @@ class User:
 
         return True
 
-    def mute(self, time_m: int) -> bool:
+    def mute(self) -> bool:
         """
-        Mute user for a specific amount of time (in minutes)
+        Mute the user.
         """
         add = {
             "uid": self.id,
-            "name": self.name,
-            "time": time_m
+            "name": self.name
         }
 
         # Check if the user is already muted by checking the mutes.json file.

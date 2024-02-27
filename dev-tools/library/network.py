@@ -54,18 +54,18 @@ class User:
     def get_json(self) -> str:
         return "DEV"
 
-    def ban(self, time_h: int) -> bool:
+    def ban(self) -> bool:
         """
-        Ban user for a specific amount of time (in hours)
+        Ban the user from the server.
         """
         return False
 
     def op(self) -> bool:
         return False
 
-    def mute(self, time_m: int) -> bool:
+    def mute(self) -> bool:
         """
-        Mute user for a specific amount of time (in minutes)
+        Mute the user.
         """
         return False
     

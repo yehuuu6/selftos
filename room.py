@@ -153,19 +153,14 @@ def execute_kick(args: List[str], executer: SelftosNetwork.User | None) -> None:
             SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] User not found."], executer)
 
 def execute_mute(args: List[str], executer: SelftosNetwork.User | None) -> None:
-    if len(args) < 2:
-        SelftosUtils.printc([f"{PREFIX} Usage: mute <user_name> <time_minutes>"], executer)
+    if len(args) < 1:
+        SelftosUtils.printc([f"{PREFIX} Usage: mute <user_name>"], executer)
     else:
         user_name = args[0]
-        try:
-            timeout = int(args[1])
-        except ValueError:
-            SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] Invalid timeout value. Must be an integer!"], executer)
-            return
         executed_by = f"[cyan]{executer.name}[/cyan]" if executer is not None else "the Console"
         for user in users_list:
             if user.name == user_name:
-                result = user.mute(timeout)
+                result = user.mute()
                 if not result:
                     SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] User is already muted."], executer)
                     return
@@ -234,19 +229,14 @@ def execute_deop(args: List[str], executer: SelftosNetwork.User | None) -> None:
             SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] User not found."], executer)
 
 def execute_ban(args: List[str], executer: SelftosNetwork.User | None) -> None:
-    if len(args) < 2:
-        SelftosUtils.printc([f"{PREFIX} Usage: ban <user_name> <time_hours>"], executer)
+    if len(args) < 1:
+        SelftosUtils.printc([f"{PREFIX} Usage: ban <user_name>"], executer)
     else:
         user_name = args[0]
-        try:
-            timeout = int(args[1])
-        except ValueError:
-            SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] Invalid timeout value. Must be an integer!"], executer)
-            return
         executed_by = f"[cyan]{executer.name}[/cyan]" if executer is not None else "the Console"
         for user in users_list:
             if user.name == user_name:
-                result = user.ban(timeout)
+                result = user.ban()
                 if not result:
                     SelftosUtils.printc([f"{PREFIX} [red]Error:[/red] User is already banned."], executer)
                     return
