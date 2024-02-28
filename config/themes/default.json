@@ -1,0 +1,17 @@
+{
+  "general": {
+    "name": "Default",
+    "description": "Default theme for the Selftos chat server",
+    "version": "1.0.0",
+    "author": "yehuuu6"
+  },
+  "colors": {
+    "console": "magenta",
+    "users": "cyan",
+    "plugins": "cyan",
+    "error": "red",
+    "success": "green3",
+    "warning": "orange1",
+    "indicator": "bold green3"
+  }
+}
