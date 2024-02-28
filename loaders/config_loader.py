@@ -129,6 +129,9 @@ class ConfigLoader:
         except ValueError:
             SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] Invalid JSON in '{self.CONFIG_PATH}'.")
             return False
+        except:
+            SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] Failed to load '{self.CONFIG_PATH}'.")
+            return False
         for key in self.main_config.keys():
             if key not in room_config.keys():
                 SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] Option [yellow]{key}[/yellow] not found in '{self.CONFIG_PATH}'.")
@@ -148,6 +151,7 @@ class ConfigLoader:
                     room_config["default_role"] = role["name"]
                 room_config["roles"].append(role)
         except Exception as e:
+            SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] {e}")
             return False
         return True
 
