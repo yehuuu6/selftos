@@ -490,7 +490,7 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
                 SelftosUtils.printf(f"{PREFIX} [red]Error:[/red] Plugin '{plugin.name}' has failed to handle message event. Cause: {e}")
             else:
                 if not broadcast_authorization:
-                    SelftosUtils.printf(f"{PREFIX} [warning3]Warning:[/warning3] Plugin '{plugin.name}' cancelled the broadcast event.")
+                    SelftosUtils.printf(f"{PREFIX} [orange1]Warning:[/orange1] Plugin '{plugin.name}' cancelled the broadcast event.")
                     return
 
         SelftosUtils.broadcast(PREFIX, users_list, f"{escape(str(package.content))}", source=f"{user.name}", render_on_console=True)
@@ -513,7 +513,7 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
                 SelftosUtils.printf(f"{PREFIX} [red]Error:[/red] Plugin '{plugin.name}' has failed to handle command event. Cause: {e}")
             else:
                 if not execute_authorization:
-                    SelftosUtils.printf(f"{PREFIX} [warning3]Warning:[/warning3] Plugin '{plugin.name}' cancelled the command event.")
+                    SelftosUtils.printf(f"{PREFIX} [orange1]Warning:[/orange1] Plugin '{plugin.name}' cancelled the command event.")
                     return
 
         if not user.has_permission(command, args):
@@ -550,7 +550,7 @@ def client_handler(client: socket.socket, address: tuple) -> None:
                     SelftosUtils.printf(f"{PREFIX} [red]Error:[/red] Plugin '{plugin.name}' has failed to handle package event. Cause: {e}")
                 else:
                     if not package_authorization:
-                        SelftosUtils.printf(f"{PREFIX} [warning3]Warning:[/warning3] Plugin '{plugin.name}' cancelled the package handle event.")
+                        SelftosUtils.printf(f"{PREFIX} [orange1]Warning:[/orange1] Plugin '{plugin.name}' cancelled the package handle event.")
                         return
             package_handler(package, client)
         else:
