@@ -25,7 +25,7 @@ class PluginLoader:
             if not hasattr(plugin_instance, prop):
                 SelftosUtils.printf(f"{self.PREFIX} [orange1]Warning:[/orange1] Missing required property [yellow]{prop}[/yellow] in [cyan]{module_name}[/cyan].")
                 return False
-        # Check if properties are callable and have the correct signature
+        # Check if properties are callable
         for prop in required_properties[6:]:
             if not callable(getattr(plugin_instance, prop)):
                 SelftosUtils.printf(f"{self.PREFIX} [orange1]Warning:[/orange1] Property [yellow]{prop}[/yellow] in [cyan]{module_name}[/cyan] is not callable.")
