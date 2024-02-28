@@ -46,6 +46,7 @@ class ExamplePlugin:
         Cancellable: No
         :param user: The user who joined the server
         """
+        pass
 
     def on_user_left(self, user: SelftosNetwork.User) -> None:
         """
