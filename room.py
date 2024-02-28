@@ -481,6 +481,11 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
         for plugin in plugin_loader.plugins:
             try:
                 broadcast_authorization = plugin.on_message_received(user, package.content)
+                # If the plugin returns something other than True or False, it's invalid.
+                if not isinstance(broadcast_authorization, bool):
+                    SelftosUtils.printf(f"{PREFIX} [red]Error:[/red] Plugin [cyan]{plugin.name}[/cyan] has returned an invalid value. It must be a boolean. Shutting down the server.")
+                    shutdown(f"'{plugin.name}' is an invalid plugin. Remove it and start the server.")
+                    return
             except Exception as e:
                 SelftosUtils.printf(f"{PREFIX} [red]Error:[/red] Plugin '{plugin.name}' has failed to handle message event. Cause: {e}")
             else:
@@ -499,6 +504,10 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
         for plugin in plugin_loader.plugins:
             try:
                 execute_authorization = plugin.on_command_executed(user, command, args)
+                if not isinstance(execute_authorization, bool):
+                    SelftosUtils.printf(f"{PREFIX} [red]Error:[/red] Plugin [cyan]{plugin.name}[/cyan] has returned an invalid value. It must be a boolean. Shutting down the server.")
+                    shutdown(f"'{plugin.name}' is an invalid plugin. Remove it and start the server.")
+                    return
             except Exception as e:
                 SelftosUtils.printf(f"{PREFIX} [red]Error:[/red] Plugin '{plugin.name}' has failed to handle command event. Cause: {e}")
             else:
@@ -531,6 +540,10 @@ def client_handler(client: socket.socket, address: tuple) -> None:
             for plugin in plugin_loader.plugins:
                 try:
                     package_authorization = plugin.on_package_received(client, package)
+                    if not isinstance(package_authorization, bool):
+                        SelftosUtils.printf(f"{PREFIX} [red]Error:[/red] Plugin [cyan]{plugin.name}[/cyan] has returned an invalid value. It must be a boolean. Shutting down the server.")
+                        shutdown(f"'{plugin.name}' is an invalid plugin. Remove it and start the server.")
+                        return
                 except Exception as e:
                     SelftosUtils.printf(f"{PREFIX} [red]Error:[/red] Plugin '{plugin.name}' has failed to handle package event. Cause: {e}")
                 else:
