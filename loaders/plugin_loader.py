@@ -5,6 +5,9 @@ import utils.functions as SelftosUtils
 import library.network as SelftosNetwork
 
 from typing import List
+from loaders.theme_loader import ThemeLoader
+
+theme = ThemeLoader()
 
 DEBUG_MODE = True # Set to True to load .py files instead of .pyd files for hot-reloading
 
@@ -23,12 +26,12 @@ class PluginLoader:
         # Check properties
         for prop in required_properties:
             if not hasattr(plugin_instance, prop):
-                SelftosUtils.printf(f"{self.PREFIX} [orange1]Warning:[/orange1] Missing required property [yellow]{prop}[/yellow] in [cyan]{module_name}[/cyan].")
+                SelftosUtils.printf(f"{self.PREFIX} [{theme.warning}]Warning:[/{theme.warning}] Missing required property [yellow]{prop}[/yellow] in [{theme.plugins}]{module_name}[/{theme.plugins}].")
                 return False
         # Check if properties are callable
         for prop in required_properties[6:]:
             if not callable(getattr(plugin_instance, prop)):
-                SelftosUtils.printf(f"{self.PREFIX} [orange1]Warning:[/orange1] Property [yellow]{prop}[/yellow] in [cyan]{module_name}[/cyan] is not callable.")
+                SelftosUtils.printf(f"{self.PREFIX} [{theme.warning}]Warning:[/{theme.warning}] Property [yellow]{prop}[/yellow] in [{theme.plugins}]{module_name}[/{theme.plugins}] is not callable.")
                 return False
         return True
 
@@ -36,7 +39,7 @@ class PluginLoader:
     def load_plugins(self) -> None:
         if not os.path.exists(self.plugin_directory):
             os.mkdir(self.plugin_directory)
-            SelftosUtils.printf(f"{self.PREFIX} [orange1]Warning:[/orange1] No plugin directory found. Created a new one.")
+            SelftosUtils.printf(f"{self.PREFIX} [{theme.warning}]Warning:[/{theme.warning}] No plugin directory found. Created a new one.")
             return
         
         sys.path.append(os.path.abspath(self.plugin_directory))
@@ -53,22 +56,22 @@ class PluginLoader:
                         plugin_class = getattr(module, module_name)
                         plugin_instance = plugin_class()
                         if not self.validate_plugin(plugin_instance, module_name):
-                            SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] Plugin [cyan]{filename}[/cyan] is not a valid plugin!")
+                            SelftosUtils.printf(f"{self.PREFIX} [{theme.error}]Error:[/{theme.error}] Plugin [{theme.plugins}]{filename}[/{theme.plugins}] is not a valid plugin!")
                             continue
                         self.plugins.append(plugin_instance)
                 except Exception as e:
-                    SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] Failed to load [cyan]{filename}[/cyan]. Cause: {e}")
+                    SelftosUtils.printf(f"{self.PREFIX} [{theme.error}]Error:[/{theme.error}] Failed to load [{theme.plugins}]{filename}[/{theme.plugins}]. Cause: {e}")
                     continue
                 else:
-                    SelftosUtils.printf(f"{self.PREFIX} Loaded [cyan]{plugin_instance.name}[/cyan] successfully.")
+                    SelftosUtils.printf(f"{self.PREFIX} Loaded [{theme.plugins}]{plugin_instance.name}[/{theme.plugins}] successfully.")
 
         if len(self.plugins) == 0:
             SelftosUtils.printf(f"{self.PREFIX} No plugins were loaded.")
         else:
-            SelftosUtils.printf(f"{self.PREFIX} [cyan]{len(self.plugins)}[/cyan] plugins are loaded and active. Type [italic]list [yellow]plugins[/yellow][/italic] to see them.")
+            SelftosUtils.printf(f"{self.PREFIX} [{theme.plugins}]{len(self.plugins)}[/{theme.plugins}] plugins are loaded and active. Type [italic]list [yellow]plugins[/yellow][/italic] to see them.")
 
     def reload_plugins(self, online_users: List[SelftosNetwork.User]) -> bool:
-        SelftosUtils.printf(f"{self.PREFIX} [orange1]Warning:[/orange1] You may still require to restart the server to apply changes to the plugins.")
+        SelftosUtils.printf(f"{self.PREFIX} [{theme.warning}]Warning:[/{theme.warning}] You may still require to restart the server to apply changes to the plugins.")
         SelftosUtils.printf(f"{self.PREFIX} Reloading plugins...")
         try:
             # Clear the existing plugins
@@ -80,7 +83,7 @@ class PluginLoader:
             # Load plugins again
             self.load_plugins()
         except Exception as e:
-            SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] Failed to reload plugins. Cause: {e}")
+            SelftosUtils.printf(f"{self.PREFIX} [{theme.error}]Error:[/{theme.error}] Failed to reload plugins. Cause: {e}")
             return False
         for plugin in self.plugins:
             plugin.online_users = online_users
@@ -88,17 +91,17 @@ class PluginLoader:
         return True
     
     def unload_plugin(self, plugin_name: str) -> bool:
-        SelftosUtils.printf(f"{self.PREFIX} [orange1]Warning:[/orange1] You may still require to restart the server to apply changes to the plugins.")
+        SelftosUtils.printf(f"{self.PREFIX} [{theme.warning}]Warning:[/{theme.warning}] You may still require to restart the server to apply changes to the plugins.")
         try:
             target_module_name = plugin_name.replace(" ", "")
             for plugin in self.plugins:
                 module_name = plugin.name.replace(" ", "")
                 if module_name == target_module_name:
                     self.plugins.remove(plugin)
-                    SelftosUtils.printf(f"{self.PREFIX} Unloaded [cyan]{module_name}.pyd[/cyan] successfully.")
+                    SelftosUtils.printf(f"{self.PREFIX} Unloaded [{theme.plugins}]{module_name}.pyd[/{theme.plugins}] successfully.")
                     return True
         except Exception as e:
-            SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] Failed to unload plugin. Cause: {e}")
+            SelftosUtils.printf(f"{self.PREFIX} [{theme.error}]Error:[/{theme.error}] Failed to unload plugin. Cause: {e}")
             return False
-        SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] Plugin [cyan]{target_module_name}[/cyan] not found.")
+        SelftosUtils.printf(f"{self.PREFIX} [{theme.error}]Error:[/{theme.error}] Plugin [{theme.plugins}]{target_module_name}[/{theme.plugins}] not found.")
         return False
