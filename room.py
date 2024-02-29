@@ -12,7 +12,7 @@ import threading
 import json
 import asyncio
 
-PREFIX = f"<[{theme.prefix}]Console>[/{theme.prefix}]"
+PREFIX = f"<[{theme.prefix}]Console[/{theme.prefix}]>"
 
 # Initialize the loader objects
 config_loader = ConfigLoader()
