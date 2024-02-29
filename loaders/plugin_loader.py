@@ -5,16 +5,14 @@ import utils.functions as SelftosUtils
 import library.network as SelftosNetwork
 
 from typing import List
-from loaders.theme_loader import ThemeLoader
-
-theme = ThemeLoader()
+from loaders.theme_loader import theme
 
 DEBUG_MODE = True # Set to True to load .py files instead of .pyd files for hot-reloading
 
 file_extension = ".py" if DEBUG_MODE else ".pyd"
 
 class PluginLoader:
-    PREFIX = "<PluginLoader>"
+    PREFIX = f"<[{theme.prefix}]PluginLoader[/{theme.prefix}]>"
 
     def __init__(self):
         self.plugin_directory = "plugins"
