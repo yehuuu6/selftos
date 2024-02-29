@@ -23,12 +23,12 @@ class User:
         self.sock = sock
         self.address = sock.getpeername()
 
-        self.is_op = self.get_user_status(self.ops_list_path)
-        self.is_banned = self.get_user_status(self.bans_list_path)
-        self.is_muted = self.get_user_status(self.mutes_list_path)
+        self.is_op = self.__get_user_status(self.ops_list_path)
+        self.is_banned = self.__get_user_status(self.bans_list_path)
+        self.is_muted = self.__get_user_status(self.mutes_list_path)
         self.color = "cyan"
-        self.roles = self.set_roles()
-        self.main_role = self.set_main_role()
+        self.roles = self.__set_roles()
+        self.main_role = self.__set_main_role()
 
     def who(self, detailed: bool = False) -> str:
         """
@@ -40,11 +40,11 @@ class User:
             output = f"[orange1]ID:[/orange1] {self.id} - [orange1]Name:[/orange1] {self.name} - [orange1]Role[/orange1]: {self.main_role}"
         return output
     
-    def set_main_role(self) -> str:
+    def __set_main_role(self) -> str:
         role = self.roles[-1] # The last role in the list is the main role
         return role
 
-    def get_user_status(self, file_path: str) -> bool:
+    def __get_user_status(self, file_path: str) -> bool:
         with open(file_path, "r") as user_list:
             users = json.load(user_list)
         for user in users:
@@ -52,7 +52,7 @@ class User:
                 return True
         return False
 
-    def set_roles(self) -> List[str]:
+    def __set_roles(self) -> List[str]:
         """
         Sets the user's role based on the user's name, ordered by level.
         """
@@ -224,8 +224,8 @@ class User:
         except PermissionError:
             return False
         
-        self.roles = self.set_roles()
-        self.main_role = self.set_main_role()
+        self.roles = self.__set_roles()
+        self.main_role = self.__set_main_role()
 
         return True
 
@@ -254,8 +254,8 @@ class User:
         except PermissionError:
             return False
         
-        self.roles = self.set_roles()
-        self.main_role = self.set_main_role()
+        self.roles = self.__set_roles()
+        self.main_role = self.__set_main_role()
 
         return True
 
