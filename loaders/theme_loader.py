@@ -6,16 +6,16 @@ class ThemeLoader:
     PREFIX = "<ThemeLoader>"
     def __init__(self):
         self.theme_path = "config/themes/"
-        self.theme = self.load_theme()
-        self.console = self.set_console_color()
-        self.users = self.set_user_colors()
-        self.plugins = self.set_plugins_color()
-        self.success = self.set_success_color()
-        self.warning = self.set_warning_color()
-        self.error = self.set_error_color()
-        self.indicator = self.set_indicator_color()
+        self.theme = self.__load_theme()
+        self.prefix = self.__set_prefix_color()
+        self.users = self.__set_user_colors()
+        self.plugins = self.__set_plugins_color()
+        self.success = self.__set_success_color()
+        self.warning = self.__set_warning_color()
+        self.error = self.__set_error_color()
+        self.indicator = self.__set_indicator_color()
 
-    def load_theme(self):
+    def __load_theme(self):
         try:
             for theme in os.listdir(self.theme_path):
                 if theme.endswith(".json"):
@@ -24,45 +24,40 @@ class ThemeLoader:
         except Exception as e:
             SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] Failed to load theme. Cause: {e}")
             exit(1)
-
-    def get_theme(self):
+    
+    def __set_prefix_color(self):
         if self.theme is None:
             return None
-        name = self.theme["general"]["name"]
-        SelftosUtils.printf(f"{self.PREFIX} Loaded theme [{self.indicator}]{name}[/{self.indicator}].")
-        return self.theme
+        return self.theme["colors"]["prefix"]
     
-    def set_console_color(self):
-        if self.theme is None:
-            return None
-        return self.theme["colors"]["console"]
-    
-    def set_user_colors(self):
+    def __set_user_colors(self):
         if self.theme is None:
             return None
         return self.theme["colors"]["users"]
     
-    def set_plugins_color(self):
+    def __set_plugins_color(self):
         if self.theme is None:
             return None
         return self.theme["colors"]["plugins"]
     
-    def set_success_color(self):
+    def __set_success_color(self):
         if self.theme is None:
             return None
         return self.theme["colors"]["success"]
     
-    def set_warning_color(self):
+    def __set_warning_color(self):
         if self.theme is None:
             return None
         return self.theme["colors"]["warning"]
 
-    def set_error_color(self):
+    def __set_error_color(self):
         if self.theme is None:
             return None
         return self.theme["colors"]["error"]
     
-    def set_indicator_color(self):
+    def __set_indicator_color(self):
         if self.theme is None:
             return None
         return self.theme["colors"]["indicator"]
+
+theme = ThemeLoader()
