@@ -12,6 +12,6 @@
     "error": "red",
     "success": "green3",
     "warning": "orange1",
-    "indicator": "bold green3"
+    "indicator": "bold yellow"
   }
 }
