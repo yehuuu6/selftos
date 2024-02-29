@@ -1,14 +1,12 @@
 import utils.functions as SelftosUtils
 import json
 import os
-from loaders.theme_loader import ThemeLoader
-
-theme = ThemeLoader()
+from loaders.theme_loader import theme
 
 # TODO: Update validation rules for the config file, it's missing some rules.
 
 class ConfigLoader:
-    PREFIX = "<ConfigLoader>"
+    PREFIX = f"<[{theme.prefix}]ConfigLoader[/{theme.prefix}]>"
     CONFIG_PATH = "config/core/config.json"
     ROLES_PATH = "config/core/roles.json"
     BANS_PATH = "config/banned-users.json"
