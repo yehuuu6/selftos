@@ -1,6 +1,7 @@
 # This is an example plugin for the Selftos server you can create your own plugins by following this example.
 
 from typing import List
+from loaders.theme_loader import theme
 
 import library.network as SelftosNetwork # Has classes like User, Package, etc.
 import utils.functions as SelftosUtils # Has functions like printf, printc, broadcast, etc.
@@ -28,6 +29,7 @@ class ExamplePlugin:
         :param package: The package that was received
         :return: False to cancel the received package processing, True to continue normally
         """
+        SelftosUtils.printf(f"{self.prefix} Received package from {client_sock.getpeername()}: {package.type} {package.content}")
         return True
 
     def on_message_received(self, user: SelftosNetwork.User, message: str) -> bool:
