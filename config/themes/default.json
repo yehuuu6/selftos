@@ -6,7 +6,7 @@
     "author": "yehuuu6"
   },
   "colors": {
-    "console": "magenta",
+    "prefix": "magenta",
     "users": "cyan",
     "plugins": "cyan",
     "error": "red",
