@@ -3,7 +3,7 @@ from prompt_toolkit import PromptSession, ANSI
 from rich.markup import escape
 from loaders.plugin_loader import PluginLoader
 from loaders.config_loader import ConfigLoader
-from loaders.theme_loader import ThemeLoader
+from loaders.theme_loader import theme
 
 import utils.functions as SelftosUtils
 import library.network as SelftosNetwork
@@ -12,10 +12,9 @@ import threading
 import json
 import asyncio
 
-PREFIX = "<Console>"
+PREFIX = f"<[{theme.prefix}]Console>[/{theme.prefix}]"
 
 # Initialize the loader objects
-theme = ThemeLoader()
 config_loader = ConfigLoader()
 plugin_loader = PluginLoader()
 
@@ -63,7 +62,7 @@ def execute_list(args: List[str], executer: SelftosNetwork.User | None) -> None:
     if len(args) == 0:
         output_a = [
             f"{PREFIX} Usage: list <request>",
-            f"[{theme.console}]> Available requests:[/{theme.console}] [{theme.indicator}]users, roles, plugins[/{theme.indicator}]"
+            f"[{theme.prefix}]> Available requests:[/{theme.prefix}] [{theme.indicator}]users, roles, plugins[/{theme.indicator}]"
         ]
         SelftosUtils.printc(output_a, executer)
         return
@@ -82,18 +81,18 @@ def execute_list(args: List[str], executer: SelftosNetwork.User | None) -> None:
             index = config['roles'].index(role) + 1
             is_default = role.get('default')
             default_indicator = f"[{theme.indicator}](default)[/{theme.indicator}]" if is_default else ""
-            output_c.append(f"[{theme.console}] {index}. [{theme.console}]Role:[/{theme.console}] {role['name']}[/{theme.console}] {default_indicator}")
-            output_c.append(f"[{theme.console}] - Level[/{theme.console}]: {role['level']}")
-            output_c.append(f"[{theme.console}] > Permissions[/{theme.console}]:")
+            output_c.append(f"[{theme.prefix}] {index}. [{theme.prefix}]Role:[/{theme.prefix}] {role['name']}[/{theme.prefix}] {default_indicator}")
+            output_c.append(f"[{theme.prefix}] - Level[/{theme.prefix}]: {role['level']}")
+            output_c.append(f"[{theme.prefix}] > Permissions[/{theme.prefix}]:")
             for permission, actions in role['permissions'].items():
                 allowed_actions = ", ".join(f"[green]{action}[/green]" for action in actions)
-                output_c.append(f"[{theme.console}]  - {permission}[/{theme.console}]: {allowed_actions}")
+                output_c.append(f"[{theme.prefix}]  - {permission}[/{theme.prefix}]: {allowed_actions}")
 
             role_users = role.get('users', [])
             if not role_users:
-                output_c.append(f"[{theme.console}] > Users[/{theme.console}]: [{theme.indicator}](empty)[/{theme.indicator}]")
+                output_c.append(f"[{theme.prefix}] > Users[/{theme.prefix}]: [{theme.indicator}](empty)[/{theme.indicator}]")
             else:
-                output_c.append(f"[{theme.console}] > Users[/{theme.console}]:")
+                output_c.append(f"[{theme.prefix}] > Users[/{theme.prefix}]:")
                 for i, user in enumerate(role_users, start=1):
                     output_c.append(f"  - {i} | {user['name']}")
 
@@ -108,9 +107,9 @@ def execute_list(args: List[str], executer: SelftosNetwork.User | None) -> None:
         output_d = [f"{PREFIX} Listing plugins:"]
         for plugin in plugin_loader.plugins:
             num = plugin_loader.plugins.index(plugin) + 1
-            output_d.append(f"[{theme.console}] {num}) [{theme.plugins}]{plugin.name} {plugin.version}[/{theme.plugins}][/{theme.console}]")
-            output_d.append(f"[{theme.console}]   - [{theme.indicator}]Description[/{theme.indicator}]: {plugin.description}[/{theme.console}]")
-            output_d.append(f"[{theme.console}]   - [{theme.indicator}]Author[/{theme.indicator}]: {plugin.author}[/{theme.console}]")
+            output_d.append(f"[{theme.prefix}] {num}) [{theme.plugins}]{plugin.name} {plugin.version}[/{theme.plugins}][/{theme.prefix}]")
+            output_d.append(f"[{theme.prefix}]   - [{theme.indicator}]Description[/{theme.indicator}]: {plugin.description}[/{theme.prefix}]")
+            output_d.append(f"[{theme.prefix}]   - [{theme.indicator}]Author[/{theme.indicator}]: {plugin.author}[/{theme.prefix}]")
             if plugin != plugin_loader.plugins[-1]:
                 output_d.append(f"\n[{theme.indicator}]----------------------------------------[/{theme.indicator}]")
         SelftosUtils.printc(output_d, executer)
@@ -366,7 +365,7 @@ def execute_reload(args: List[str], executer: SelftosNetwork.User | None) -> Non
     if len(args) == 0:
         output_a = [
             f"{PREFIX} Usage: reload <request>",
-            f"[{theme.console}]> Available requests:[/{theme.console}] [{theme.indicator}]plugins[/{theme.indicator}]"
+            f"[{theme.prefix}]> Available requests:[/{theme.prefix}] [{theme.indicator}]plugins[/{theme.indicator}]"
         ]
         SelftosUtils.printc(output_a, executer)
         return
@@ -380,22 +379,22 @@ def execute_reload(args: List[str], executer: SelftosNetwork.User | None) -> Non
 def execute_help(args: List[str], executer: SelftosNetwork.User | None) -> None:
     help_output = [
         f"{PREFIX} List of commands | [{theme.users}]Arguments marked with * are required[/{theme.users}]",
-        f"[{theme.console}]> list[/{theme.console}] [{theme.indicator}]{escape('[items*]')}[/{theme.indicator}] - Prints out a list of the specified items.",
-        f"[{theme.console}]> say[/{theme.console}] [{theme.indicator}]{escape('[message*]')}[/{theme.indicator}] - Broadcast a message to all the users in the room from [italic]console[/italic].",
-        f"[{theme.console}]> kick[/{theme.console}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] - Kicks the specified user from the server.",
-        f"[{theme.console}]> mute[/{theme.console}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] - Mutes the specified user.",
-        f"[{theme.console}]> unmute[/{theme.console}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] - Unmutes the specified user.",
-        f"[{theme.console}]> op[/{theme.console}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] - Grants operator privileges to the specified user.",
-        f"[{theme.console}]> deop[/{theme.console}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] - Revokes operator privileges from the specified user.",
-        f"[{theme.console}]> grant[/{theme.console}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] [{theme.indicator}]{escape('[role*]')}[/{theme.indicator}] - Grants the specified role to the specified user.",
-        f"[{theme.console}]> revoke[/{theme.console}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] [{theme.indicator}]{escape('[role*]')}[/{theme.indicator}] - Revokes the specified role from the specified user.",
-        f"[{theme.console}]> ban[/{theme.console}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] - Bans the specified user from the server.",
-        f"[{theme.console}]> unban[/{theme.console}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] - Unbans the specified user from the server.",
-        f"[{theme.console}]> who[/{theme.console}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] - Shows [italic]detailed[/italic] information about the specified user.",
-        f"[{theme.console}]> clear[/{theme.console}] - Clears the console.",
-        f"[{theme.console}]> reload[/{theme.console}] [{theme.indicator}]{escape('[request*]')}[/{theme.indicator}] - Reloads the specified systems.",
-        f"[{theme.console}]> unload[/{theme.console}] [{theme.indicator}]{escape('[plugin*]')}[/{theme.indicator}] - Unloads the specified plugin.",
-        f"[{theme.console}]> shutdown[/{theme.console}] [{theme.indicator}]{escape('[reason]')}[/{theme.indicator}] - Closes the server and broadcasts the reason to all the users in the room."
+        f"[{theme.prefix}]> list[/{theme.prefix}] [{theme.indicator}]{escape('[items*]')}[/{theme.indicator}] - Prints out a list of the specified items.",
+        f"[{theme.prefix}]> say[/{theme.prefix}] [{theme.indicator}]{escape('[message*]')}[/{theme.indicator}] - Broadcast a message to all the users in the room from [italic]console[/italic].",
+        f"[{theme.prefix}]> kick[/{theme.prefix}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] - Kicks the specified user from the server.",
+        f"[{theme.prefix}]> mute[/{theme.prefix}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] - Mutes the specified user.",
+        f"[{theme.prefix}]> unmute[/{theme.prefix}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] - Unmutes the specified user.",
+        f"[{theme.prefix}]> op[/{theme.prefix}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] - Grants operator privileges to the specified user.",
+        f"[{theme.prefix}]> deop[/{theme.prefix}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] - Revokes operator privileges from the specified user.",
+        f"[{theme.prefix}]> grant[/{theme.prefix}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] [{theme.indicator}]{escape('[role*]')}[/{theme.indicator}] - Grants the specified role to the specified user.",
+        f"[{theme.prefix}]> revoke[/{theme.prefix}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] [{theme.indicator}]{escape('[role*]')}[/{theme.indicator}] - Revokes the specified role from the specified user.",
+        f"[{theme.prefix}]> ban[/{theme.prefix}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] - Bans the specified user from the server.",
+        f"[{theme.prefix}]> unban[/{theme.prefix}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] - Unbans the specified user from the server.",
+        f"[{theme.prefix}]> who[/{theme.prefix}] [{theme.indicator}]{escape('[user*]')}[/{theme.indicator}] - Shows [italic]detailed[/italic] information about the specified user.",
+        f"[{theme.prefix}]> clear[/{theme.prefix}] - Clears the console.",
+        f"[{theme.prefix}]> reload[/{theme.prefix}] [{theme.indicator}]{escape('[request*]')}[/{theme.indicator}] - Reloads the specified systems.",
+        f"[{theme.prefix}]> unload[/{theme.prefix}] [{theme.indicator}]{escape('[plugin*]')}[/{theme.indicator}] - Unloads the specified plugin.",
+        f"[{theme.prefix}]> shutdown[/{theme.prefix}] [{theme.indicator}]{escape('[reason]')}[/{theme.indicator}] - Closes the server and broadcasts the reason to all the users in the room."
     ]
     SelftosUtils.printc(help_output, executer)
 
