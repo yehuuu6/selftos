@@ -453,7 +453,7 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
         users_list.append(user)
         if user.name == OWNER['name']:
             user.is_op = True
-            SelftosUtils.broadcast(PREFIX, users_list, f"Attention! owner [{theme.users}]{user.name}[/{theme.users}] has joined the room.", render_on_console=True)
+            SelftosUtils.broadcast(PREFIX, users_list, f"Attention! Owner [{theme.users}]{user.name}[/{theme.users}] has joined the room.", render_on_console=True)
 
         SelftosUtils.broadcast(PREFIX, users_list, f"[{theme.users}]{user.name}[/{theme.users}] has joined the room.", render_on_console=True, exclude=user)
 
