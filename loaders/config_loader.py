@@ -49,7 +49,7 @@ class ConfigLoader:
     {
         "name": "Admin",
         "level": 2,
-        "color": "green2",
+        "color": "green3",
         "permissions": {
         "help": ["*"],
         "list": ["*"],
