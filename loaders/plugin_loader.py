@@ -89,7 +89,7 @@ class PluginLoader:
         return True
     
     def unload_plugin(self, plugin_name: str) -> bool:
-        SelftosUtils.printf(f"{self.PREFIX} [{theme.warning}]Warning:[/{theme.warning}] You may still require to restart the server to apply changes to the plugins.")
+        SelftosUtils.printf(f"{self.PREFIX} [{theme.warning}]Warning:[/{theme.warning}] You may still require to remove the plugin from the plugin directory to completely unload it.")
         try:
             target_module_name = plugin_name.replace(" ", "")
             for plugin in self.plugins:
