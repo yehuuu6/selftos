@@ -42,7 +42,6 @@ class ConfigLoader:
         "help": ["*"],
         "list": ["users"],
         "pm": ["*"],
-        "theme": ["*"]
         },
         "default": True,
     },
@@ -54,7 +53,6 @@ class ConfigLoader:
         "help": ["*"],
         "list": ["*"],
         "pm": ["*"],
-        "theme": ["*"],
         "kick": ["*"],
         "ban": ["*"],
         "unban": ["*"],
@@ -142,7 +140,7 @@ class ConfigLoader:
                 SelftosUtils.printf(f"{self.PREFIX} [{theme.error}]Error:[/{theme.error}] Option [{theme.indicator}]{key}[/{theme.indicator}] not found in '{self.CONFIG_PATH}'.")
                 return False
             if not isinstance(room_config[key], self.valid_key_types[key]):
-                SelftosUtils.printf(f"{self.PREFIX} [{theme.error}]Error:[/{theme.error}] Option [{theme.indicator}]{key}[/{theme.indicator}] value type is not valid in '{self.CONFIG_PATH}'.")
+                SelftosUtils.printf(f"{self.PREFIX} [{theme.error}]Error:[/{theme.error}] Option [{theme.indicator}]{key}[/{theme.indicator}] value type is not valid in '{self.CONFIG_PATH}'. Expected [{theme.indicator}]{self.valid_key_types[key]}[/{theme.indicator}].")
                 return False
         return True
 
@@ -180,7 +178,7 @@ class ConfigLoader:
         SelftosUtils.printf(f"{self.PREFIX} Loading roles...")
         SelftosUtils.printf(f"{self.PREFIX} Default role is set to [{theme.indicator}]{config['default_role']}[/{theme.indicator}].")
         for role in config['roles']:
-            SelftosUtils.printf(f"{self.PREFIX} [{theme.indicator}]{role['name']}[/{theme.indicator}] role is ready!")
+            SelftosUtils.printf(f"{self.PREFIX} [{role['color']}]{role['name']}[/{role['color']}] role is ready!")
 
     def load(self) -> dict:
         """
