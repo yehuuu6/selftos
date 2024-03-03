@@ -3,6 +3,7 @@ __pycache__/
 tests
 build
 dist
+config
 *.spec
 *.build
 *.dist
