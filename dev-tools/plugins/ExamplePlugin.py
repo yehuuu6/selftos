@@ -1,7 +1,6 @@
 # This is an example plugin for the Selftos server you can create your own plugins by following this example.
 
 from typing import List
-from loaders.theme_loader import theme
 
 import library.network as SelftosNetwork # Has classes like User, Package, etc.
 import utils.functions as SelftosUtils # Has functions like printf, printc, broadcast, etc.
