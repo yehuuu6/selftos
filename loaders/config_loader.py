@@ -29,6 +29,7 @@ class ConfigLoader:
         },
         "show_muted_messages": True, # Prints muted user messages to the console if True
         "show_executed_commands": True, # Prints executed commands by users to the console if True
+        "theme": "default" # Theme to be used in the room
     }
 
     roles_config = [
@@ -83,6 +84,7 @@ class ConfigLoader:
         "owner": object,
         "show_muted_messages": bool,
         "show_executed_commands": bool,
+        "theme": str
     }
 
     # Check if the config file exists
@@ -120,8 +122,8 @@ class ConfigLoader:
                     exit(1)
                 SelftosUtils.printf(f"{self.PREFIX} [{theme.indicator}]{file}[/{theme.indicator}] created successfully.")
         if not is_ready:
-            SelftosUtils.printf(f"{self.PREFIX} [{theme.warning}]Warning:[/{theme.warning}] Some files were missing and have been created. Please edit them and restart the server.")
-
+            SelftosUtils.printf(f"{self.PREFIX} [{theme.warning}]Warning:[/{theme.warning}] Some files were missing and have been created. Please edit them and start the server.")
+            exit(1)
     # Validate the core config file
     def validate_core_config(self) -> bool:
         global room_config
@@ -157,6 +159,11 @@ class ConfigLoader:
         return True
 
     def show_room_config(self, config: dict) -> None:
+        if config["owner"]["name"] == "":
+            config["owner"] = {
+                "uid": "",
+                "name": "None"
+            }
         SelftosUtils.printf(f"{self.PREFIX} Host is set to [{theme.indicator}]{config['host']}[/{theme.indicator}].")
         SelftosUtils.printf(f"{self.PREFIX} Port is set to [{theme.indicator}]{config['port']}[/{theme.indicator}].")
         SelftosUtils.printf(f"{self.PREFIX} ID is set to [{theme.indicator}]{config['id']}[/{theme.indicator}].")
@@ -167,6 +174,7 @@ class ConfigLoader:
         SelftosUtils.printf(f"{self.PREFIX} Owner is set to [{theme.indicator}]{config['owner']['name']}[/{theme.indicator}].")
         SelftosUtils.printf(f"{self.PREFIX} Show muted messages is set to [{theme.indicator}]{config['show_muted_messages']}[/{theme.indicator}].")
         SelftosUtils.printf(f"{self.PREFIX} Show executed commands is set to [{theme.indicator}]{config['show_executed_commands']}[/{theme.indicator}].")
+        SelftosUtils.printf(f"{self.PREFIX} Theme is set to [{theme.indicator}]{theme.theme['general']['name']}[/{theme.indicator}].")
         SelftosUtils.printf(f"{self.PREFIX} Loading roles...")
         SelftosUtils.printf(f"{self.PREFIX} Default role is set to [{theme.indicator}]{config['default_role']}[/{theme.indicator}].")
         for role in config['roles']:
