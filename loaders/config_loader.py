@@ -35,7 +35,7 @@ class ConfigLoader:
 
     roles_config = [
     {
-        "name": "User",
+        "name": "Member",
         "level": 1,
         "color": "cyan",
         "permissions": {
