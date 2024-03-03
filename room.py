@@ -81,7 +81,7 @@ def execute_list(args: List[str], executer: SelftosNetwork.User | None) -> None:
             index = config['roles'].index(role) + 1
             is_default = role.get('default')
             default_indicator = f"[{theme.indicator}](default)[/{theme.indicator}]" if is_default else ""
-            output_c.append(f"[{theme.prefix}] {index}. [{theme.prefix}]Role:[/{theme.prefix}] {role['name']}[/{theme.prefix}] {default_indicator}")
+            output_c.append(f"[{theme.prefix}] {index}. Role[/{theme.prefix}]: [{role['color']}]{role['name']}[/{role['color']}] {default_indicator}")
             output_c.append(f"[{theme.prefix}] - Level[/{theme.prefix}]: {role['level']}")
             output_c.append(f"[{theme.prefix}] > Permissions[/{theme.prefix}]:")
             for permission, actions in role['permissions'].items():
@@ -89,15 +89,18 @@ def execute_list(args: List[str], executer: SelftosNetwork.User | None) -> None:
                 output_c.append(f"[{theme.prefix}]  - {permission}[/{theme.prefix}]: {allowed_actions}")
 
             role_users = role.get('users', [])
-            if not role_users:
-                output_c.append(f"[{theme.prefix}] > Users[/{theme.prefix}]: [{theme.indicator}](empty)[/{theme.indicator}]")
+            if not is_default:
+                if not role_users:
+                    output_c.append(f"[{theme.prefix}] > Users[/{theme.prefix}]: [{theme.indicator}](empty)[/{theme.indicator}]")
+                else:
+                    output_c.append(f"[{theme.prefix}] > Users[/{theme.prefix}]:")
+                    for i, user in enumerate(role_users, start=1):
+                        output_c.append(f"  - {i} | {user['name']}")
             else:
-                output_c.append(f"[{theme.prefix}] > Users[/{theme.prefix}]:")
-                for i, user in enumerate(role_users, start=1):
-                    output_c.append(f"  - {i} | {user['name']}")
+                output_c.append(f"[{theme.prefix}] > Users[/{theme.prefix}]: [{theme.indicator}](everyone)[/{theme.indicator}]")
 
             if role['name'] != config['roles'][-1]['name']:
-                output_c.append(f"\n[{theme.indicator}]----------------------------------------[/{theme.indicator}]")
+                output_c.append(f"[{theme.indicator}]----------------------------------------[/{theme.indicator}]")
         SelftosUtils.printc(output_c, executer)
 
     elif args[0] == "plugins":
