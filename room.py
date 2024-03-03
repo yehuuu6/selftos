@@ -592,7 +592,7 @@ def connection_handler() -> None:
             break
 
 async def handle_admin_input() -> None:
-    prompt_text = f"\033[93mconsole@{PROMPT_PREFIX}" + r"\~ "
+    prompt_text = f"console@{PROMPT_PREFIX}" + r"\~ "
     session = PromptSession(ANSI(prompt_text), erase_when_done=True)
 
     while is_running:  
