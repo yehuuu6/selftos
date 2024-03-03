@@ -23,6 +23,7 @@ class ConfigLoader:
         "description": "A chat room for Selftos!", # Room description
         "maxUsers": 5, # Maximum number of users allowed in the room
         "private": False, # If True, the room will be hidden from the rooms list
+        "enable_plugins": False, # If True, the server will load plugins from the "plugins" directory
         "owner": {
             "uid": "", # User ID
             "name": "" # User name
@@ -81,6 +82,7 @@ class ConfigLoader:
         "description": str,
         "maxUsers": int,
         "private": bool,
+        "enable_plugins": bool,
         "owner": object,
         "show_muted_messages": bool,
         "show_executed_commands": bool,
@@ -209,5 +211,5 @@ class ConfigLoader:
                 SelftosUtils.printf(f"{self.PREFIX} [{theme.indicator}]{room_config['owner']['name']}[/{theme.indicator}] has been added to the operators list.")
 
         self.show_room_config(room_config)
-        SelftosUtils.printf(f"{self.PREFIX} Finished loading the config.")
+        SelftosUtils.printf(f"{self.PREFIX} Finished loading the configuration file.")
         return room_config
