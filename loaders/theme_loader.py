@@ -35,7 +35,7 @@ class ThemeLoader:
         self.indicator = self.__set_indicator_color()
         self.__override_default_theme()
 
-    def __validate_theme(self, theme: dict, name) -> bool:
+    def __validate_theme(self, theme: dict, name: str) -> bool:
         required_properties = ["general", "colors"]
         required_sub_properties_general = ["name", "description", "author"]
         required_sub_properties_colors = ["prefix", "users", "plugins", "error", "success", "warning", "indicator"]
