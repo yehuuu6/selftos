@@ -19,7 +19,7 @@ config_loader = ConfigLoader()
 plugin_loader = PluginLoader()
 
 # Load the configuration
-SelftosUtils.printf(f"{PREFIX} Starting config loader...")
+SelftosUtils.printf(f"{PREFIX} Starting configuration loader...")
 config = config_loader.load()
 
 OWNER = config['owner']
@@ -621,8 +621,11 @@ async def handle_admin_input() -> None:
                 requested_command(args, executer = None)
 
 def start() -> None:
-    SelftosUtils.printf(f"{PREFIX} Starting plugin loader...")
-    plugin_loader.load_plugins()
+    if config['enable_plugins']:
+        SelftosUtils.printf(f"{PREFIX} Starting plugin loader...")
+        plugin_loader.load_plugins()
+    else:
+        SelftosUtils.printf(f"{PREFIX} [{theme.warning}]Warning:[/{theme.warning}] Plugins are disabled in the configuration file.")
     SelftosUtils.printf(f"{PREFIX} Starting the server...")
     global is_running
     #connect_main_server()
