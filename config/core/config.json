@@ -8,8 +8,9 @@
   "private": false,
   "owner": {
     "uid": "",
-    "name": ""
+    "name": "yehuuu"
   },
   "show_muted_messages": true,
-  "show_executed_commands": true
+  "show_executed_commands": true,
+  "theme": "default"
 }
