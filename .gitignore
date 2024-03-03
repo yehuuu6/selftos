@@ -6,7 +6,6 @@ dist
 *.spec
 *.build
 *.dist
-*.pyi
 *.pyd
 *.onefile-build
 *.exe
