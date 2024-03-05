@@ -26,7 +26,7 @@ user_name = input("User Name: ")
 #IP = input("Server IP: ")
 #PORT = int(input("Server Port: "))
 
-IP = "localhost"
+IP = "20.19.33.218"
 PORT = 7030
 
 def package_handler(package: SelftosNetwork.Package) -> None:
