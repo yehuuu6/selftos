@@ -1,7 +1,9 @@
 import utils.functions as SelftosUtils
 import json
 import os
+
 from loaders.theme_loader import theme
+from time import sleep
 
 # TODO: Update validation rules for the config file, it's missing some rules.
 
@@ -96,6 +98,7 @@ class ConfigLoader:
             try: os.mkdir("config")
             except Exception as e:
                 SelftosUtils.printf(f"{self.PREFIX} [{theme.error}]Error:[/{theme.error}] {e}")
+                sleep(3)
                 exit(1)
             else:
                 SelftosUtils.printf(f"{self.PREFIX} [{theme.indicator}]config[/{theme.indicator}] directory created successfully.")
@@ -106,6 +109,7 @@ class ConfigLoader:
             try: os.mkdir("config/core")
             except Exception as e:
                 SelftosUtils.printf(f"{self.PREFIX} [{theme.error}]Error:[/{theme.error}] {e}")
+                sleep(3)
                 exit(1)
             else:
                 SelftosUtils.printf(f"{self.PREFIX} [{theme.indicator}]config/core[/{theme.indicator}] directory created successfully.")
@@ -119,10 +123,12 @@ class ConfigLoader:
                     json.dump(self.initial_configs[file], open(file, "w"), indent=2)
                 except Exception as e:
                     SelftosUtils.printf(f"{self.PREFIX} [{theme.error}]Error:[/{theme.error}] {e}")
+                    sleep(3)
                     exit(1)
                 SelftosUtils.printf(f"{self.PREFIX} [{theme.indicator}]{file}[/{theme.indicator}] created successfully.")
         if not is_ready:
             SelftosUtils.printf(f"{self.PREFIX} [{theme.warning}]Warning:[/{theme.warning}] Some files were missing and have been created. Please edit them and start the server.")
+            sleep(3)
             exit(1)
     # Validate the core config file
     def validate_core_config(self) -> bool:
@@ -186,10 +192,12 @@ class ConfigLoader:
         """
         self.load_config()
         if not self.validate_core_config():
+            sleep(3)
             exit(1)
         
         if not self.set_roles_to_config():
             SelftosUtils.printf(f"{self.PREFIX} [{theme.error}]Error:[/{theme.error}] Failed to load roles in '{self.ROLES_PATH}'.")
+            sleep(3)
             exit(1)
 
         if room_config.get("owner") != None and room_config["owner"]["uid"] != "" and room_config["owner"]["name"] != "":

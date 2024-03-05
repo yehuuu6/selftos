@@ -1,4 +1,5 @@
 from typing import List
+from time import sleep
 
 import json
 import os
@@ -78,6 +79,7 @@ class ThemeLoader:
             return themes
         except Exception as e:
             SelftosUtils.printf(f"{self.PREFIX} [red]Error:[/red] Failed to load themes. Cause: {e}")
+            sleep(3)
             exit(1)
 
     def __set_theme(self) -> dict:

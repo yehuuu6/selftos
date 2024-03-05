@@ -3,11 +3,12 @@ import library.general as SelftosGeneral
 import utils.functions as SelftosUtils
 import socket
 import threading
-
-from prompt_toolkit import PromptSession
 import asyncio
 import random
 import string
+
+from prompt_toolkit import PromptSession
+from time import sleep
 
 COMPUTER = socket.gethostname() # This is the computer name, used for the package source.
 
@@ -89,6 +90,7 @@ def connect_to_room() -> None:
         is_running = True
     except ConnectionRefusedError:
         SelftosUtils.printf("Connection refused by the room.")
+        sleep(3)
         exit(1)
     
     listen_thread = threading.Thread(target=listen, daemon=True)

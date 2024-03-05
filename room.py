@@ -4,6 +4,7 @@ from rich.markup import escape
 from loaders.plugin_loader import PluginLoader
 from loaders.config_loader import ConfigLoader
 from loaders.theme_loader import theme
+from time import sleep
 
 import utils.functions as SelftosUtils
 import library.network as SelftosNetwork
@@ -40,6 +41,7 @@ def connect_main_server() -> None:
         selftos_main_socket.connect((MAIN_HOST, MAIN_PORT))
     except ConnectionRefusedError:
         SelftosUtils.printf(f"{PREFIX} [{theme.error}]Error:[/{theme.error}] Connection refused by the main server.")
+        sleep(3)
         exit(1)
 
 def shutdown(reason: str = "No reason was specified.") -> None:
@@ -642,6 +644,7 @@ def start() -> None:
         connection_handler_thread.start()
     except Exception as e:
         SelftosUtils.printf(f"{PREFIX} [{theme.error}]Error:[/{theme.error}] Can not start the server: {e}")
+        sleep(3)
         exit(1)
     else:
         SelftosUtils.printf(f"{PREFIX} Server is online and listening on {config['host']}:{config['port']}")
