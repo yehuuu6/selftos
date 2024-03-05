@@ -177,6 +177,7 @@ class ConfigLoader:
         SelftosUtils.printf(f"{self.PREFIX} Description is set to [{theme.indicator}]{config['description']}[/{theme.indicator}].")
         SelftosUtils.printf(f"{self.PREFIX} Maximum number of users is set to [{theme.indicator}]{config['maxUsers']}[/{theme.indicator}].")
         SelftosUtils.printf(f"{self.PREFIX} Private is set to [{theme.indicator}]{config['private']}[/{theme.indicator}].")
+        SelftosUtils.printf(f"{self.PREFIX} Enable Plugins is set to [{theme.indicator}]{config['enable_plugins']}[/{theme.indicator}].")
         SelftosUtils.printf(f"{self.PREFIX} Owner is set to [{theme.indicator}]{config['owner']['name']}[/{theme.indicator}].")
         SelftosUtils.printf(f"{self.PREFIX} Show muted messages is set to [{theme.indicator}]{config['show_muted_messages']}[/{theme.indicator}].")
         SelftosUtils.printf(f"{self.PREFIX} Show executed commands is set to [{theme.indicator}]{config['show_executed_commands']}[/{theme.indicator}].")
