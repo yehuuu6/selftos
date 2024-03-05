@@ -6,6 +6,8 @@ import library.network as SelftosNetwork # Has classes like User, Package, etc.
 import utils.functions as SelftosUtils # Has functions like printf, printc, broadcast, etc.
 import socket
 
+# TODO Add on_load function to the plugin system and find a way to launch custom methods from the plugin system on server.
+
 class ExamplePlugin:
     def __init__(self):
         """
