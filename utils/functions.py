@@ -85,3 +85,12 @@ def broadcast(prefix: str, users: List[SelftosNetwork.User], message: str, sourc
             continue
         package = SelftosNetwork.Package(type = "SFSMessage", content = message)
         SelftosNetwork.send_package(package, user.sock)
+
+def is_space(msg) -> bool:
+    """
+    Returns True if the message contains only spaces.
+    """
+    for char in msg:
+        if char != " ":
+            return False
+    return True
