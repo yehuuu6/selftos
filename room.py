@@ -429,12 +429,6 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
     Manages received packages.
     """
 
-    def is_space(msg) -> bool:
-        for char in msg:
-            if char != " ":
-                return False
-        return True
-
     if not package.is_valid_package():
         SelftosUtils.printf(f"{PREFIX} [{theme.error}]Error:[/{theme.error}] Invalid package received, something is wrong!")
         _package = SelftosNetwork.Package(type = "SFSMessage", content = "You have send an invalid package. Connection will be closed.")
@@ -476,7 +470,7 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
         if package.content == "":
             return
         # If package content has only spaces, ignore it.
-        if is_space(package.content):
+        if SelftosUtils.is_space(package.content):
             return
         if user.is_muted:
             muted_inform_package = SelftosNetwork.Package(type = "SFSMessage", content = f"{PREFIX} You are muted.")
@@ -603,6 +597,8 @@ async def handle_admin_input() -> None:
     while is_running:  
         try:
             cin = await session.prompt_async()
+            if cin == "" or SelftosUtils.is_space(cin):
+                continue
         except (EOFError, KeyboardInterrupt):
             shutdown()
             break
