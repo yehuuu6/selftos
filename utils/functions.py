@@ -9,7 +9,7 @@ from typing import List
 from rich.markup import escape
 
 import library.network as SelftosNetwork
-import socket
+import socket as sck
 import time
 
 output_buffer = StringIO()
@@ -52,7 +52,7 @@ def printc(messages: List[str], executer: SelftosNetwork.User | None) -> None:
     else:
         printf(output)
 
-def get_user_by_socket(sock: socket.socket, users_list: List[SelftosNetwork.User]) -> SelftosNetwork.User | None:
+def get_user_by_socket(sock: sck.socket, users_list: List[SelftosNetwork.User]) -> SelftosNetwork.User | None:
     for user in users_list:
         if user.sock == sock:
             return user

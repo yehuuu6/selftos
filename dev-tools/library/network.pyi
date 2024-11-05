@@ -2,12 +2,12 @@
 This module provides the necessary server classes for your Selftos chat application.
 """
 
-import socket
+import socket as sck
 
 from typing import List
 
 class User:
-    def __init__(self, id: str, name: str, sock: socket.socket) -> None:
+    def __init__(self, id: str, name: str, sock: sck.socket) -> None:
         self.id = id
         self.name = name
 
@@ -52,6 +52,6 @@ class Package:
 
 # Functions
 
-def get_package(sender: socket.socket) -> Package | None: ...
+def get_package(sender: sck.socket) -> Package | None: ...
 
-def send_package(package: Package, target: socket.socket) -> None: ...
+def send_package(package: Package, target: sck.socket) -> None: ...

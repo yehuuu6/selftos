@@ -4,7 +4,7 @@ from typing import List
 
 import library.network as SelftosNetwork # Has classes like User, Package, etc.
 import utils.functions as SelftosUtils # Has functions like printf, printc, broadcast, etc.
-import socket
+import socket as sck
 
 # TODO Add on_load function to the plugin system and find a way to launch custom methods from the plugin system on server.
 
@@ -22,7 +22,7 @@ class ExamplePlugin:
         self.prefix = "<[cyan]ExamplePlugin[/cyan]>"
         self.online_users: List[SelftosNetwork.User] = []
 
-    def on_package_received(self, client_sock: socket.socket, package: SelftosNetwork.Package) -> bool:
+    def on_package_received(self, client_sock: sck.socket, package: SelftosNetwork.Package) -> bool:
         """
         Called when a package is received from a client.
         Cancellable: Yes

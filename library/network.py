@@ -3,7 +3,7 @@ This module provides the necessary server classes for your Selftos chat applicat
 """
 
 import json
-import socket
+import socket as sck
 
 from typing import List
 
@@ -16,7 +16,7 @@ class User:
     ops_list_path = "config/ops.json"
     roles_list_path = "config/core/roles.json"
 
-    def __init__(self, id: str, name: str, sock: socket.socket):
+    def __init__(self, id: str, name: str, sock: sck.socket):
         self.id = id
         self.name = name
 
@@ -328,7 +328,7 @@ class ServerPreview:
 
 HEADER_SIZE = 10
 
-def receive_all(sender: socket.socket) -> str:
+def receive_all(sender: sck.socket) -> str:
     """
     Receives all the data from the sender and returns it as str.
     """
@@ -348,14 +348,14 @@ def receive_all(sender: socket.socket) -> str:
 
     return full_msg[HEADER_SIZE:]
 
-def get_package(sender: socket.socket) -> Package | None:
+def get_package(sender: sck.socket) -> Package | None:
     """
     Receives a package as str from the sender and returns it as a Package.
     """
     try:
         #response = receive_all(sender)
         response = sender.recv(4096).decode("utf-8")
-    except socket.error:
+    except sck.error:
         return None
     try:
         data = json.loads(response)
@@ -368,7 +368,7 @@ def get_package(sender: socket.socket) -> Package | None:
 
     return package
 
-def send_package(package: Package, target: socket.socket) -> None:
+def send_package(package: Package, target: sck.socket) -> None:
     """
     Sends the package to the target as bytes.
     Known bug: If the package is being sent to a client just before the client's connection
@@ -384,5 +384,5 @@ def send_package(package: Package, target: socket.socket) -> None:
 
     try:
         target.send(bytes(data, "utf-8"))
-    except socket.error:
+    except sck.error:
         pass

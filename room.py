@@ -7,7 +7,7 @@ from time import sleep
 
 import utils.functions as SelftosUtils
 import library.network as SelftosNetwork
-import socket
+import socket as sck
 import threading
 import json
 import asyncio
@@ -25,8 +25,8 @@ config = config_loader.load()
 OWNER = config['owner']
 PROMPT_PREFIX = f"{config['id']}"
 
-selftos_main_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #  Main Server
-room_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Room Server Socket
+selftos_main_socket = sck.socket(sck.AF_INET, sck.SOCK_STREAM) #  Main Server
+room_socket = sck.socket(sck.AF_INET, sck.SOCK_STREAM) # Room Server Socket
 is_running = False # Is the server running?
 users_list: List[SelftosNetwork.User] = [] # List of users in the room
 
@@ -423,7 +423,7 @@ COMMANDS = {
 
 ################ COMMANDS END ################
 
-def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> None:
+def package_handler(package: SelftosNetwork.Package, sender: sck.socket) -> None:
     """
     Manages received packages.
     """
@@ -535,7 +535,7 @@ def package_handler(package: SelftosNetwork.Package, sender: socket.socket) -> N
                 SelftosUtils.printf(f"{PREFIX} [cyan]{user.name}[/cyan] executed command: [bold yellow]{command} {args}[/bold yellow]")
             requested_command(args, executer = user)
 
-def client_handler(client: socket.socket, address: tuple) -> None:
+def client_handler(client: sck.socket, address: tuple) -> None:
     while is_running:
         package = SelftosNetwork.get_package(client)
         if package is not None:
@@ -580,7 +580,7 @@ def connection_handler() -> None:
             package = SelftosNetwork.Package(type = "SFSHandshake", content = "nickname") # TODO: Give server info to the client in content.
             SelftosNetwork.send_package(package, client_socket)
 
-        except socket.error as e:
+        except sck.error as e:
             if (not is_running):
                 break
             else:

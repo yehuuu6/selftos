@@ -1,7 +1,7 @@
 import library.network as SelftosNetwork
 import library.general as SelftosGeneral
 import utils.functions as SelftosUtils
-import socket
+import socket as sck
 import threading
 import asyncio
 import random
@@ -10,9 +10,9 @@ import string
 from prompt_toolkit import PromptSession
 from time import sleep
 
-COMPUTER = socket.gethostname() # This is the computer name, used for the package source.
+COMPUTER = sck.gethostname() # This is the computer name, used for the package source.
 
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket = sck.socket(sck.AF_INET, sck.SOCK_STREAM)
 
 is_running = False
 
@@ -26,7 +26,7 @@ user_name = input("User Name: ")
 #IP = input("Server IP: ")
 #PORT = int(input("Server Port: "))
 
-IP = "20.19.33.218"
+IP = "localhost"
 PORT = 7030
 
 def package_handler(package: SelftosNetwork.Package) -> None:
@@ -74,7 +74,7 @@ def listen() -> None:
                 continue
             package_handler(package)
 
-        except socket.error:
+        except sck.error:
             SelftosUtils.printf("An error occured!")
             input_loop.stop()
             is_running = False
