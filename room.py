@@ -34,7 +34,7 @@ def connect_main_server() -> None:
     """
     Connects to Selftos main server
     """
-    MAIN_HOST = "localhost"
+    MAIN_HOST = "192.168.1.6"
     MAIN_PORT = 7030
     try:
         selftos_main_socket.connect((MAIN_HOST, MAIN_PORT))
