@@ -4,6 +4,7 @@ tests
 build
 dist
 config
+venv
 *.spec
 *.build
 *.dist
